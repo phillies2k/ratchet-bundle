@@ -1,0 +1,14 @@
+parameters:
+    locale: en
+    secret: 1ca599924655e7082303a50d36e0baf8c168fcaac8b074b84b5ae87ae1f0c61f
+
+framework:
+    secret:          %secret%
+    router:
+        resource: "%kernel.root_dir%/Resources/config/routing.yml"
+        strict_requirements: ~
+    templating:
+        engines: ['php']
+    trusted_proxies: ~
+    session:         ~
+    fragments:       ~
