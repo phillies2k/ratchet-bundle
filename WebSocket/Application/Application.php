@@ -69,17 +69,13 @@ abstract class Application implements ApplicationInterface
             $method = 'on' . Inflector::classify(Inflector::tableize($name));
 
             if (method_exists($this, $method)) {
-                $response = call_user_func(
+                call_user_func_array(
                     array($this, $method),
-                    $event->getPayload(),
-                    $this->getClient($event->getConnection())
+                    array(
+                        $event->getPayload(),
+                        $this->getClient($event->getConnection())
+                    )
                 );
-
-                foreach ($this->clients as $client) {
-                    if ($client->getConnection() !== $event->getConnection()) {
-                        $client->getConnection()->send($response);
-                    }
-                }
             }
         }
     }
