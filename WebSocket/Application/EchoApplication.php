@@ -9,10 +9,8 @@
  */
 namespace P2\Bundle\RatchetBundle\WebSocket\Application;
 
-use P2\Bundle\RatchetBundle\WebSocket\Event\CloseEvent;
-use P2\Bundle\RatchetBundle\WebSocket\Event\OpenEvent;
-use P2\Bundle\RatchetBundle\WebSocket\Event\ErrorEvent;
-use P2\Bundle\RatchetBundle\WebSocket\Event\MessageEvent;
+use P2\Bundle\RatchetBundle\WebSocket\Client;
+use P2\Bundle\RatchetBundle\WebSocket\Payload\Payload;
 
 /**
  * Class EchoApplication
@@ -20,24 +18,13 @@ use P2\Bundle\RatchetBundle\WebSocket\Event\MessageEvent;
  */
 class EchoApplication extends Application
 {
-    public function onData(MessageEvent $event)
+    public function onMessage(Payload $payload, Client $client)
     {
-        $event->getConnection()->send($event->getPayload()->encode());
-    }
-
-    public function onError(ErrorEvent $event)
-    {
-        $event->getConnection()->send($event->getException()->getMessage());
-    }
-
-    public function onOpen(OpenEvent $event)
-    {
-        $event->getConnection()->send('connection established');
-    }
-
-    public function onClose(CloseEvent $event)
-    {
-        $event->getConnection()->send('connection closed');
+        foreach ($this->clients as $socketClient) {
+            if ($client->getConnection() !== $socketClient->getConnection()) {
+                $socketClient->getConnection()->send($payload->encode());
+            }
+        }
     }
 
     public function getName()

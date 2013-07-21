@@ -32,7 +32,7 @@ class MessageEvent extends Event implements SocketEventInterface
 
     /**
      * @param ConnectionInterface $connection
-     * @param \P2\Bundle\RatchetBundle\WebSocket\Payload\Payload $payload
+     * @param Payload $payload
      */
     public function __construct(ConnectionInterface $connection, Payload $payload)
     {
@@ -41,7 +41,7 @@ class MessageEvent extends Event implements SocketEventInterface
     }
 
     /**
-     * @return \Ratchet\ConnectionInterface
+     * @return ConnectionInterface
      */
     public function getConnection()
     {
@@ -49,7 +49,7 @@ class MessageEvent extends Event implements SocketEventInterface
     }
 
     /**
-     * @return \P2\Bundle\RatchetBundle\WebSocket\Payload\Payload
+     * @return Payload
      */
     public function getPayload()
     {

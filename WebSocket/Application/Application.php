@@ -10,11 +10,13 @@
 namespace P2\Bundle\RatchetBundle\WebSocket\Application;
 
 use Doctrine\Common\Util\Inflector;
+use P2\Bundle\RatchetBundle\WebSocket\Client;
 use P2\Bundle\RatchetBundle\WebSocket\Event\CloseEvent;
 use P2\Bundle\RatchetBundle\WebSocket\Event\ErrorEvent;
 use P2\Bundle\RatchetBundle\WebSocket\Event\MessageEvent;
 use P2\Bundle\RatchetBundle\WebSocket\Event\OpenEvent;
 use P2\Bundle\RatchetBundle\WebSocket\Events;
+use Ratchet\ConnectionInterface;
 
 /**
  *
@@ -25,6 +27,11 @@ use P2\Bundle\RatchetBundle\WebSocket\Events;
  */
 abstract class Application implements ApplicationInterface
 {
+    /**
+     * @var \SplObjectStorage|Client[]
+     */
+    protected $clients = array();
+
     /**
      * @return array
      */
@@ -38,36 +45,60 @@ abstract class Application implements ApplicationInterface
         );
     }
 
-    public function getName()
+    public function __construct()
     {
-        return 'app';
+        $this->clients = new \SplObjectStorage();
+    }
+
+    public function getClient(ConnectionInterface $connection)
+    {
+        foreach ($this->clients as $client) {
+            if ($client->getConnection() === $connection) {
+                return $client;
+            }
+        }
+
+        return null;
     }
 
     public function onData(MessageEvent $event)
     {
-        list($namespace, $name) = explode('.', $event->getName());
+        list($namespace, $name) = explode('.', $event->getPayload()->getEvent());
 
         if ($namespace === $this->getName()) {
             $method = 'on' . Inflector::classify(Inflector::tableize($name));
-            // onSendMessage(ConnectionInterface $connection, Payload $payload);
+
             if (method_exists($this, $method)) {
-                call_user_func_array(array($this, $method), array($event->getPayload()));
+                $response = call_user_func(
+                    array($this, $method),
+                    $event->getPayload(),
+                    $this->getClient($event->getConnection())
+                );
+
+                foreach ($this->clients as $client) {
+                    if ($client->getConnection() !== $event->getConnection()) {
+                        $client->getConnection()->send($response);
+                    }
+                }
             }
         }
     }
 
     public function onError(ErrorEvent $event)
     {
-        $event->getConnection()->send($event->getException()->getMessage());
+        $event->getConnection()->close();
     }
 
     public function onOpen(OpenEvent $event)
     {
-        $event->getConnection()->send('connection established');
+        $client = new Client($event->getConnection());
+        $this->clients->attach($client);
     }
 
     public function onClose(CloseEvent $event)
     {
-        $event->getConnection()->send('connection closed');
+        if (null !== $client = $this->getClient($event->getConnection())) {
+            $this->clients->detach($client);
+        }
     }
 }

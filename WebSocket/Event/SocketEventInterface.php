@@ -9,6 +9,8 @@
  */
 namespace P2\Bundle\RatchetBundle\WebSocket\Event;
 
+use Ratchet\ConnectionInterface;
+
 /**
  * Interface SocketEventInterface
  * @package P2\Bundle\RatchetBundle\WebSocket\Event
@@ -16,7 +18,7 @@ namespace P2\Bundle\RatchetBundle\WebSocket\Event;
 interface SocketEventInterface 
 {
     /**
-     * @return \Ratchet\ConnectionInterface
+     * @return ConnectionInterface
      */
     public function getConnection();
 

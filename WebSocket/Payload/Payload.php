@@ -11,13 +11,24 @@ namespace P2\Bundle\RatchetBundle\WebSocket\Payload;
 
 /**
  * Class Payload
- * @package ${NAMESPACE}
+ * @package P2\Bundle\RatchetBundle\WebSocket\Payload
  */
 class Payload
 {
+    /**
+     * @var array
+     */
     protected $data;
+
+    /**
+     * @var string
+     */
     protected $event;
 
+    /**
+     * @param string $raw
+     * @throws \InvalidArgumentException
+     */
     public function __construct($raw)
     {
         try {
@@ -54,6 +65,9 @@ class Payload
         return $this->event;
     }
 
+    /**
+     * @return string
+     */
     public function encode()
     {
         return json_encode(array('event' => $this->event, 'data' => $this->data));

@@ -9,7 +9,6 @@
  */
 namespace P2\Bundle\RatchetBundle\WebSocket\Event;
 
-use P2\Bundle\RatchetBundle\WebSocket\Payload\Payload;
 use Ratchet\ConnectionInterface;
 use Symfony\Component\EventDispatcher\Event;
 

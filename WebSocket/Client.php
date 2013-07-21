@@ -7,26 +7,28 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace P2\Bundle\RatchetBundle\WebSocket\Event;
+namespace P2\Bundle\RatchetBundle\WebSocket;
 
 use Ratchet\ConnectionInterface;
-use Symfony\Component\EventDispatcher\Event;
 
 /**
- * Class CloseEvent
- * @package P2\Bundle\RatchetBundle\WebSocket\Event
+ * Class Client
+ * @package P2\Bundle\RatchetBundle\WebSocket
  */
-class CloseEvent extends Event implements SocketEventInterface
+class Client
 {
     /**
      * @var \Ratchet\ConnectionInterface
      */
     protected $connection;
 
+
+    protected $user;
+
     /**
      * @param ConnectionInterface $connection
      */
-    public function __construct(ConnectionInterface $connection)
+    function __construct(ConnectionInterface $connection)
     {
         $this->connection = $connection;
     }

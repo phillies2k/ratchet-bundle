@@ -46,8 +46,8 @@ class Bridge implements MessageComponentInterface
      */
     public function onOpen(ConnectionInterface $conn)
     {
-        $this->log('OPEN #' . $conn->resourceId);
         $this->eventDispatcher->dispatch(Events::SOCKET_OPEN, new OpenEvent($conn));
+        $this->log('OPEN #' . $conn->resourceId);
     }
 
     /**
@@ -60,8 +60,8 @@ class Bridge implements MessageComponentInterface
      */
     public function onClose(ConnectionInterface $conn)
     {
-        $this->log('CLOSE #' . $conn->resourceId);
         $this->eventDispatcher->dispatch(Events::SOCKET_CLOSE, new CloseEvent($conn));
+        $this->log('CLOSE #' . $conn->resourceId);
     }
 
     /**
@@ -76,8 +76,8 @@ class Bridge implements MessageComponentInterface
      */
     public function onError(ConnectionInterface $conn, \Exception $e)
     {
-        $this->log('ERROR #' . $conn->resourceId . ' - ' . $e->getMessage());
         $this->eventDispatcher->dispatch(Events::SOCKET_ERROR, new ErrorEvent($conn, $e));
+        $this->log('ERROR #' . $conn->resourceId . ' - ' . $e->getMessage());
     }
 
     /**
@@ -90,8 +90,8 @@ class Bridge implements MessageComponentInterface
      */
     public function onMessage(ConnectionInterface $from, $msg)
     {
-        $this->log('MSG #' . $from->resourceId . ' - ' . $msg);
         $this->eventDispatcher->dispatch(Events::SOCKET_DATA, new MessageEvent($from, new Payload($msg)));
+        $this->log('MSG #' . $from->resourceId . ' - ' . $msg);
     }
 
     /**

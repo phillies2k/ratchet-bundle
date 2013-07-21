@@ -9,17 +9,29 @@
  */
 namespace P2\Bundle\RatchetBundle\WebSocket;
 
-use Ratchet\ConnectionInterface;
-use Symfony\Component\EventDispatcher\Event;
-
 /**
  * Class Events
  * @package P2\Bundle\RatchetBundle\WebSocket\Event
  */
 class Events
 {
+    /**
+     * @var string
+     */
     const SOCKET_CLOSE = 'socket.close';
+
+    /**
+     * @var string
+     */
     const SOCKET_DATA = 'socket.data';
+
+    /**
+     * @var string
+     */
     const SOCKET_ERROR = 'socket.error';
+
+    /**
+     * @var string
+     */
     const SOCKET_OPEN = 'socket.open';
 }
