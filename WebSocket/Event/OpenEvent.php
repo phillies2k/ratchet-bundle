@@ -17,7 +17,7 @@ use Symfony\Component\EventDispatcher\Event;
  * Class OpenEvent
  * @package P2\Bundle\RatchetBundle\WebSocket\Event
  */
-class OpenEvent extends Event
+class OpenEvent extends Event implements SocketEventInterface
 {
     /**
      * @var \Ratchet\ConnectionInterface

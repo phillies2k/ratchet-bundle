@@ -18,7 +18,7 @@ use Symfony\Component\EventDispatcher\Event;
  * Class MessageEvent
  * @package P2\Bundle\RatchetBundle\WebSocket\Event
  */
-class MessageEvent extends Event
+class MessageEvent extends Event implements SocketEventInterface
 {
     /**
      * @var \Ratchet\ConnectionInterface

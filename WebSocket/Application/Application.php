@@ -10,38 +10,23 @@
 namespace P2\Bundle\RatchetBundle\WebSocket\Application;
 
 use Doctrine\Common\Util\Inflector;
+use P2\Bundle\RatchetBundle\WebSocket\Event\CloseEvent;
+use P2\Bundle\RatchetBundle\WebSocket\Event\ErrorEvent;
+use P2\Bundle\RatchetBundle\WebSocket\Event\MessageEvent;
+use P2\Bundle\RatchetBundle\WebSocket\Event\OpenEvent;
 use P2\Bundle\RatchetBundle\WebSocket\Events;
 
 /**
+ *
+ * echo.error
+ *
  * Class Application
  * @package P2\Bundle\RatchetBundle\WebSocket\Application
  */
 abstract class Application implements ApplicationInterface
 {
-    public function getName()
-    {
-        return 'application';
-    }
-
     /**
-     * Returns an array of event names this subscriber wants to listen to.
-     *
-     * The array keys are event names and the value can be:
-     *
-     *  * The method name to call (priority defaults to 0)
-     *  * An array composed of the method name to call and the priority
-     *  * An array of arrays composed of the method names to call and respective
-     *    priorities, or 0 if unset
-     *
-     * For instance:
-     *
-     *  * array('eventName' => 'methodName')
-     *  * array('eventName' => array('methodName', $priority))
-     *  * array('eventName' => array(array('methodName1', $priority), array('methodName2'))
-     *
-     * @return array The event names to listen to
-     *
-     * @api
+     * @return array
      */
     public static function getSubscribedEvents()
     {
@@ -51,5 +36,38 @@ abstract class Application implements ApplicationInterface
             Events::SOCKET_OPEN => 'onOpen',
             Events::SOCKET_ERROR => 'onError',
         );
+    }
+
+    public function getName()
+    {
+        return 'app';
+    }
+
+    public function onData(MessageEvent $event)
+    {
+        list($namespace, $name) = explode('.', $event->getName());
+
+        if ($namespace === $this->getName()) {
+            $method = 'on' . Inflector::classify(Inflector::tableize($name));
+            // onSendMessage(ConnectionInterface $connection, Payload $payload);
+            if (method_exists($this, $method)) {
+                call_user_func_array(array($this, $method), array($event->getPayload()));
+            }
+        }
+    }
+
+    public function onError(ErrorEvent $event)
+    {
+        $event->getConnection()->send($event->getException()->getMessage());
+    }
+
+    public function onOpen(OpenEvent $event)
+    {
+        $event->getConnection()->send('connection established');
+    }
+
+    public function onClose(CloseEvent $event)
+    {
+        $event->getConnection()->send('connection closed');
     }
 }

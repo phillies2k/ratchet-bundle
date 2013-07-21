@@ -4,3 +4,4 @@
 /logs/
 /Resources/bin/cache
 /Resources/bin/logs
+/Resources/config/config.yml

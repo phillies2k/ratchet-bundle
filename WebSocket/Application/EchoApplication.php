@@ -39,4 +39,9 @@ class EchoApplication extends Application
     {
         $event->getConnection()->send('connection closed');
     }
+
+    public function getName()
+    {
+        return 'echo';
+    }
 }

@@ -9,7 +9,6 @@
  */
 namespace P2\Bundle\RatchetBundle\WebSocket\Event;
 
-use P2\Bundle\RatchetBundle\WebSocket\Payload\Payload;
 use Ratchet\ConnectionInterface;
 use Symfony\Component\EventDispatcher\Event;
 
@@ -17,7 +16,7 @@ use Symfony\Component\EventDispatcher\Event;
  * Class ErrorEvent
  * @package P2\Bundle\RatchetBundle\WebSocket\Event
  */
-class ErrorEvent extends Event
+class ErrorEvent extends Event implements SocketEventInterface
 {
     /**
      * @var \Ratchet\ConnectionInterface
