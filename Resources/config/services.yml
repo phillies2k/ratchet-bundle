@@ -5,6 +5,7 @@ parameters:
     p2_ratchet.connection_manager.class: P2\Bundle\RatchetBundle\Socket\ConnectionManager
     p2_ratchet.server.class: Ratchet\Server\IoServer
     p2_ratchet.websocket.server.class: Ratchet\WebSocket\WsServer
+    p2_ratchet.twig_extension.class: P2\Bundle\RatchetBundle\Socket\Bridge\Twig\RatchetClientExtension
 
 services:
 
@@ -35,3 +36,9 @@ services:
         arguments: [ @p2_ratchet.client_provider ]
         tags:
             - { name: kernel.event_listener, event: security.authentication.success, method: onAuthenticationSuccess }
+
+    # twig client extension
+    p2_ratchet.twig_extension:
+        class: %p2_ratchet.twig_extension.class%
+        tags:
+            - { name: 'twig.extension' }
