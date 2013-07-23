@@ -81,7 +81,6 @@
         }
 
         eventHandlers[eventHandlers.length] = handler;
-        Ratchet.prototype.on.call(this, event, handler);
     };
 
     Ratchet.prototype.on = Ratchet.registerEventHandler;

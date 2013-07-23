@@ -21,7 +21,7 @@ class RatchetClientExtension extends \Twig_Extension
      * @var string
      */
     protected static $script = <<<CLIENT_SCRIPT
-<script type="text/javascript" src="{{ asset('js/websocket.js') }}"></script>
+<script type="text/javascript" src="js/websocket.js"></script>
 <script type="text/javascript">
     var p2_ratchet_access_token = '%access_token%';
     Ratchet.debug = %debug%;
@@ -37,13 +37,23 @@ CLIENT_SCRIPT;
             new \Twig_SimpleFunction(
                 'p2_ratchet_client',
                 array($this, 'getClientScript'),
-                array('needs_environment' => true)
+                array('is_safe' => array('html'))
             )
         );
     }
 
-    public function getClientScript($debug, $client = null, $accessToken = '')
+    /**
+     * Returns the rendered client script.
+     *
+     * @param boolean $debug
+     * @param ClientInterface $client
+     *
+     * @return string
+     */
+    public function getClientScript($debug = false, ClientInterface $client = null)
     {
+        $accessToken = '';
+
         if ($client instanceof ClientInterface) {
             $accessToken = $client->getAccessToken();
         }
