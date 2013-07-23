@@ -7,7 +7,7 @@
     }
 
     if (! 'JSON' in window) {
-        throw new Error('No JSON support by your browser.');
+        throw new Error('No JSON support available by your browser.');
     }
 
     /**
@@ -31,23 +31,29 @@
         var self = this;
 
         socket.onmessage = function(e) {
-            return onMessage.call(self, e, this);
+            var data = JSON.parse(e.data);
+            if (data.event && data.data) {
+                var handlers = socketEventHandler[data.event];
+                if (handlers && handlers.length) {
+                    for (var i = 0, len = handlers.length; i < len; i++) {
+                        handlers[i].call(self, data.data);
+                    }
+                }
+            }
         };
 
         socket.onopen = function(e) {
-            return onOpen.call(self, e, this);
+            self.emit('socket.auth.request', window.p2_ratchet_access_token);
         };
 
-        socket.onclose = function(e) {
-            return onClose.call(self, e, this);
-        };
-
-        socket.onerror = function(e) {
-            return onError.call(self, e, this);
-        };
+        socket.onclose = this.onClose;
+        socket.onerror = this.onError;
     };
 
     Ratchet.prototype.authenticated = false;
+
+    Ratchet.prototype.onClose = function() {};
+    Ratchet.prototype.onError = function() {};
 
     Ratchet.prototype.emit = function(event, data) {
         try {
@@ -81,28 +87,5 @@
     });
 
     window.Ratchet = Ratchet;
-
-    /**
-     * private methods
-     */
-
-    function onMessage(e, sock) {
-        var data = JSON.parse(e.data);
-        if (data.event && data.data) {
-            var handlers = socketEventHandler[data.event];
-            if (handlers && handlers.length) {
-                for (var i = 0, len = handlers.length; i < len; i++) {
-                    handlers[i].call(this, data.data);
-                }
-            }
-        }
-    }
-
-    function onOpen(e) {
-        this.emit('socket.auth.request', window.p2_ratchet_access_token);
-    }
-
-    function onClose(e) {}
-    function onError(e) {}
 
 }).call(window);
