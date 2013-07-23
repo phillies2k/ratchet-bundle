@@ -23,8 +23,16 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
  */
 class Bridge implements MessageComponentInterface
 {
+    /**
+     * @var string
+     */
     const ADDRESS = '0.0.0.0';
+
+    /**
+     * @var int
+     */
     const PORT = 80;
+
     /**
      * @var ConnectionManagerInterface
      */

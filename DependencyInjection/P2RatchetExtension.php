@@ -25,10 +25,6 @@ class P2RatchetExtension extends Extension implements PrependExtensionInterface
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
 
-        if (! isset($config['provider'])) {
-            throw new InvalidArgumentException('missing provider config.');
-        }
-
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');
 
