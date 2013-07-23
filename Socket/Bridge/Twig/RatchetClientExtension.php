@@ -36,7 +36,8 @@ CLIENT_SCRIPT;
         return array(
             new \Twig_SimpleFunction(
                 'p2_ratchet_client',
-                array($this, 'getClientScript')
+                array($this, 'getClientScript'),
+                array('needs_environment' => true)
             )
         );
     }
