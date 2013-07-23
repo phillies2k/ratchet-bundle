@@ -1,9 +1,17 @@
 P2RatchetBundle
 ===============
 
+*Version: 1.0.0*
 
 
-### Todo
+### Installation
 
-* Create Ratchet factory class
-  ** use the factory in console command to enable ratchet:start [port] [bind_address]
+    "require": {
+        "p2/ratchet-bundle": "dev-master"
+    }
+
+
+### Usage
+
+* Implement the [ClientInterface](Socket/ClientInterface.php) in your applications user model or document.
+* Implement the [ClientProviderInterface](Socket/ClientProviderInterface.php) in your applications user provider or managing repository.
