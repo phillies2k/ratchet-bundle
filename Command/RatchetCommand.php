@@ -26,7 +26,6 @@ class RatchetCommand extends ContainerAwareCommand
     protected function configure()
     {
         $this
-            ->addArgument(static::ARG_ADDRESS, InputArgument::OPTIONAL, '')
             ->setDescription('Starts a web socket server')
             ->setHelp('ratchet:start')
             ->setName('ratchet:start');

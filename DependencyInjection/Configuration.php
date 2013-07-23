@@ -2,6 +2,7 @@
 
 namespace P2\Bundle\RatchetBundle\DependencyInjection;
 
+use P2\Bundle\RatchetBundle\Socket\Bridge;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
@@ -24,8 +25,8 @@ class Configuration implements ConfigurationInterface
             ->addDefaultsIfNotSet()
             ->children()
                 ->scalarNode('provider')->cannotBeEmpty()->end()
-                ->scalarNode('address')->defaultValue('0.0.0.0')->end()
-                ->scalarNode('port')->defaultValue(8080)->end()
+                ->scalarNode('address')->defaultValue(Bridge::ADDRESS)->end()
+                ->scalarNode('port')->defaultValue(Bridge::PORT)->end()
             ->end();
 
         return $treeBuilder;
