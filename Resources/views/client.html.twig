@@ -1,0 +1,4 @@
+<script type="text/javascript" src="{{ asset('js/websocket.js') }}"></script>
+<script type="text/javascript">
+    var wsAccessToken = '{% if app.user %}{{ app.user.accessToken }}{% endif %}';
+</script>

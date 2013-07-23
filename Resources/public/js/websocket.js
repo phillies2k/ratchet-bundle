@@ -15,17 +15,6 @@
      */
     var socketEventHandler = {};
 
-
-    socketEventHandler['socket.open'][0] = function(data) {
-        if (! this.authenticated && window.wsAccessToken) {
-            this.emit('socket.authenticate', { token: window.wsAccessToken });
-        }
-    };
-
-    socketEventHandler['socket.user'][0] = function(data) {
-        this.authenticated = true;
-    };
-
     /**
      * @type WebSocket
      */
@@ -106,6 +95,13 @@
     function onOpen(e) {}
     function onClose(e) {}
     function onError(e) {}
+
+    Ratchet.registerEventHandler('socket.open', function() {
+        var token = window.wsAccessToken;
+        if (token && token.length) {
+            this.emit('socket.auth.request', token);
+        }
+    });
 
     window.Ratchet = Ratchet;
 
