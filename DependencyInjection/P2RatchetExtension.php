@@ -5,6 +5,7 @@ namespace P2\Bundle\RatchetBundle\DependencyInjection;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Exception\InvalidArgumentException;
+use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\DependencyInjection\Loader;
@@ -14,7 +15,7 @@ use Symfony\Component\DependencyInjection\Loader;
  *
  * To learn more see {@link http://symfony.com/doc/current/cookbook/bundles/extension.html}
  */
-class P2RatchetExtension extends Extension
+class P2RatchetExtension extends Extension implements PrependExtensionInterface
 {
     /**
      * {@inheritDoc}
@@ -46,5 +47,29 @@ class P2RatchetExtension extends Extension
             'security.authentication.success_handler.class',
             'P2\Bundle\RatchetBundle\Security\AuthenticationSuccessHandler'
         );
+    }
+
+    /**
+     * Allow an extension to prepend the extension configurations.
+     *
+     * @param ContainerBuilder $container
+     */
+    public function prepend(ContainerBuilder $container)
+    {
+        $bundles = $container->getParameter('kernel.bundles');
+
+        if (isset($bundles['AsseticBundle'])) {
+            $container->prependExtensionConfig(
+                'assetic',
+                array(
+                    'assets' => array(
+                        'p2_ratchet_js' => array(
+                            'inputs' => array('@P2RatchetBundle/Resources/public/js/websocket.js'),
+                            'output' => 'js/websocket.js'
+                        )
+                    )
+                )
+            );
+        }
     }
 }
