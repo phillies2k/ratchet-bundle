@@ -25,6 +25,13 @@ class Payload
      */
     protected $event;
 
+    /**
+     * Creates a new payload from the given json string.
+     *
+     * @param string $json
+     *
+     * @return Payload
+     */
     public static function createFromJson($json)
     {
         list($event, $data) = static::decode($json);
@@ -32,6 +39,14 @@ class Payload
         return new static($event, $data);
     }
 
+    /**
+     * Decodes the given json string
+     *
+     * @param string $json The json string to decode
+     * @return array The decoded data
+     *
+     * @throws \InvalidArgumentException When the decoded json does not match the supported data structure
+     */
     public static function decode($json)
     {
         try {
@@ -56,8 +71,7 @@ class Payload
 
     /**
      * @param string $event
-     * @param mixed $data
-     * @throws \InvalidArgumentException
+     * @param null|mixed $data
      */
     public function __construct($event, $data = null)
     {
@@ -82,6 +96,8 @@ class Payload
     }
 
     /**
+     * Returns the json representation of this payload.
+     *
      * @return string
      */
     public function encode()

@@ -1,6 +1,6 @@
 parameters:
 
-    p2_ratchet.authentication_handler.class: P2\Bundle\RatchetBundle\Authentication\AuthenticationSuccessHandler
+    p2_ratchet.authentication_handler.class: P2\Bundle\RatchetBundle\Socket\Authentication\AuthenticationSuccessHandler
     p2_ratchet.bridge.class: P2\Bundle\RatchetBundle\Socket\Bridge
     p2_ratchet.connection_manager.class: P2\Bundle\RatchetBundle\Socket\ConnectionManager
     p2_ratchet.server.class: Ratchet\Server\IoServer

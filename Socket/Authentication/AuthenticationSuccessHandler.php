@@ -15,7 +15,7 @@ use Symfony\Component\Security\Core\Event\AuthenticationEvent;
 
 /**
  * Class AuthenticationSuccessHandler
- * @package P2\Bundle\RatchetBundle\Security\Authentication\Handler
+ * @package P2\Bundle\RatchetBundle\Socket\Authentication
  */
 class AuthenticationSuccessHandler
 {
@@ -27,7 +27,7 @@ class AuthenticationSuccessHandler
     /**
      * @param ClientProviderInterface $clientProvider
      */
-    function __construct(ClientProviderInterface $clientProvider)
+    public function __construct(ClientProviderInterface $clientProvider)
     {
         $this->clientProvider = $clientProvider;
     }

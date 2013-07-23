@@ -84,7 +84,7 @@ class Bridge implements MessageComponentInterface
      * @param ConnectionManagerInterface $connectionManager
      * @param EventDispatcher $eventDispatcher
      */
-    function __construct(ConnectionManagerInterface $connectionManager, EventDispatcher $eventDispatcher)
+    public function __construct(ConnectionManagerInterface $connectionManager, EventDispatcher $eventDispatcher)
     {
         $this->connectionManager = $connectionManager;
         $this->eventDispatcher = $eventDispatcher;
@@ -93,7 +93,9 @@ class Bridge implements MessageComponentInterface
 
     /**
      * When a new connection is opened it will be passed to this method
+     *
      * @param  ConnectionInterface $conn The socket/connection that just connected to your application
+     *
      * @throws \Exception
      */
     public function onOpen(ConnectionInterface $conn)
@@ -102,48 +104,56 @@ class Bridge implements MessageComponentInterface
         $conn->send($payload->encode());
 
         $this->eventDispatcher->dispatch(static::SOCKET_OPEN, new ConnectionEvent($conn));
-        $this->log(sprintf('NEW <info>#%s</info>', $conn->resourceId));
+        $this->log('NEW', sprintf('<info>#%s</info>', $conn->resourceId));
     }
 
     /**
-     * This is called before or after a socket is closed (depends on how it's closed).  SendMessage to $conn will not result in an error if it has already been closed.
+     * This is called before or after a socket is closed (depends on how it's closed).  SendMessage to $conn will not
+     * result in an error if it has already been closed.
+     *
      * @param  ConnectionInterface $conn The socket/connection that is closing/closed
+     *
      * @throws \Exception
      */
-    function onClose(ConnectionInterface $conn)
+    public function onClose(ConnectionInterface $conn)
     {
         if (null !== $client = $this->connectionManager->getClientForConnection($conn)) {
             $this->connectionManager->removeConnection($conn);
 
             $this->eventDispatcher->dispatch(static::SOCKET_CLOSE, new CloseEvent($conn, $client));
-            $this->log(sprintf('CLOSE CLIENT <info>#%s</info>', $client->getAccessToken()));
+            $this->log('CLOSE CLIENT', sprintf('<info>#%s</info>', $client->getAccessToken()));
         }
 
         $conn->close();
 
-        $this->log(sprintf('CLOSE <info>#%s</info>', $conn->resourceId));
+        $this->log('CLOSE', sprintf('<info>#%s</info>', $conn->resourceId));
     }
 
     /**
-     * If there is an error with one of the sockets, or somewhere in the application where an Exception is thrown,
-     * the Exception is sent back down the stack, handled by the Server and bubbled back up the application through this method
+     * If there is an error with one of the sockets, or somewhere in the application where an Exception is thrown, the
+     * Exception is sent back down the stack, handled by the Server and bubbled back up the application through this
+     * method.
+     *
      * @param  ConnectionInterface $conn
      * @param  \Exception $e
+     *
      * @throws \Exception
      */
-    function onError(ConnectionInterface $conn, \Exception $e)
+    public function onError(ConnectionInterface $conn, \Exception $e)
     {
         $this->eventDispatcher->dispatch(static::SOCKET_ERROR, new ErrorEvent($conn, $e));
-        $this->log(sprintf('ERROR <error>%s</error>', $e->getMessage()));
+        $this->log('ERROR', $e->getMessage());
     }
 
     /**
-     * Triggered when a client sends data through the socket
+     * Triggered when a client sends data through the socket.
+     *
      * @param  \Ratchet\ConnectionInterface $from The socket/connection that sent the message to your application
      * @param  string $msg  The message received
+     *
      * @throws \Exception
      */
-    function onMessage(ConnectionInterface $from, $msg)
+    public function onMessage(ConnectionInterface $from, $msg)
     {
         try {
             $payload = Payload::createFromJson($msg);
@@ -157,12 +167,12 @@ class Bridge implements MessageComponentInterface
                         new ConnectionEvent($from, $client)
                     );
 
-                    $this->log(sprintf('EVT <info>%s</info> #%s', $payload->getEvent(), $payload->getData()));
+                    $this->log('EVT', sprintf('<info>%s</info> %s', $payload->getEvent(), $payload->getData()));
 
                     $response = new Payload(static::SOCKET_AUTH_SUCCESS, $client->jsonSerialize());
                     $from->send($response->encode());
 
-                    $this->log(sprintf('MSG <info>#%s</info> - #%s', $from->resourceId, $response->encode()));
+                    $this->log('MSG', sprintf('<info>%s</info> %s', $from->resourceId, $response->encode()));
 
                     break;
                 default:
@@ -173,16 +183,24 @@ class Bridge implements MessageComponentInterface
     }
 
     /**
-     * @param string $message
+     * Logs to the server.
+     *
+     * @param $type
+     * @param $message
      */
-    protected function log($message)
+    protected function log($type, $message)
     {
         $timestamp = date('Y.m.d H:i', time());
 
+        if ($type === 'ERROR') {
+            $message = '<error>' . $message . '</error>';
+        }
+
         $this->output->writeln(
             sprintf(
-                "\t<comment>[%s]</comment> - %s",
+                '[<comment>%s</comment>] - %s %s',
                 $timestamp,
+                $type,
                 $message
             )
         );
