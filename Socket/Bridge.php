@@ -15,6 +15,8 @@ use P2\Bundle\RatchetBundle\Socket\Event\ErrorEvent;
 use P2\Bundle\RatchetBundle\Socket\Event\MessageEvent;
 use Ratchet\ConnectionInterface;
 use Ratchet\MessageComponentInterface;
+use Symfony\Component\Console\Output\ConsoleOutput;
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
 /**
@@ -44,6 +46,11 @@ class Bridge implements MessageComponentInterface
     protected $eventDispatcher;
 
     /**
+     * @var OutputInterface
+     */
+    protected $output;
+
+    /**
      * @param ConnectionManagerInterface $connectionManager
      * @param EventDispatcher $eventDispatcher
      */
@@ -51,6 +58,7 @@ class Bridge implements MessageComponentInterface
     {
         $this->connectionManager = $connectionManager;
         $this->eventDispatcher = $eventDispatcher;
+        $this->output = new ConsoleOutput();
     }
 
     /**
@@ -64,6 +72,7 @@ class Bridge implements MessageComponentInterface
         $conn->send($payload->encode());
 
         $this->eventDispatcher->dispatch(Events::SOCKET_OPEN, new ConnectionEvent($conn));
+        $this->output->writeln(sprintf('new connection: <info>#%s</info>', $conn->resourceId));
     }
 
     /**
