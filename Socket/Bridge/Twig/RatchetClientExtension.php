@@ -42,9 +42,9 @@ CLIENT_SCRIPT;
         );
     }
 
-    public function getClientScript($debug, ClientInterface $client = null, $accessToken = '')
+    public function getClientScript($debug, $client = null, $accessToken = '')
     {
-        if ($client !== null) {
+        if ($client instanceof ClientInterface) {
             $accessToken = $client->getAccessToken();
         }
 
