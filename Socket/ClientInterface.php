@@ -9,8 +9,6 @@
  */
 namespace P2\Bundle\RatchetBundle\Socket;
 
-use Ratchet\ConnectionInterface;
-
 /**
  * Interface ClientInterface
  * @package P2\Bundle\RatchetBundle\Socket

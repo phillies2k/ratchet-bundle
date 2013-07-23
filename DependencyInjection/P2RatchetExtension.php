@@ -5,7 +5,6 @@ namespace P2\Bundle\RatchetBundle\DependencyInjection;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Exception\InvalidArgumentException;
-use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\DependencyInjection\Loader;
@@ -15,7 +14,7 @@ use Symfony\Component\DependencyInjection\Loader;
  *
  * To learn more see {@link http://symfony.com/doc/current/cookbook/bundles/extension.html}
  */
-class P2RatchetExtension extends Extension implements PrependExtensionInterface
+class P2RatchetExtension extends Extension
 {
     /**
      * {@inheritDoc}
@@ -24,6 +23,10 @@ class P2RatchetExtension extends Extension implements PrependExtensionInterface
     {
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
+
+        if (! isset($config['provider'])) {
+            throw new InvalidArgumentException(sprintf('Missing provider config in section: %s', $this->getAlias()));
+        }
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');
@@ -37,29 +40,11 @@ class P2RatchetExtension extends Extension implements PrependExtensionInterface
             )
         );
 
+        $container->setAlias('p2_ratchet.client_provider', $config['provider']);
+
         $container->setParameter(
             'security.authentication.success_handler.class',
             'P2\Bundle\RatchetBundle\Security\AuthenticationSuccessHandler'
         );
-    }
-
-    /**
-     * Allow an extension to prepend the extension configurations.
-     *
-     * @param ContainerBuilder $container
-     */
-    public function prepend(ContainerBuilder $container)
-    {
-        $bundles = $container->getParameter('kernel.bundles');
-        if (isset($bundles['SecurityBundle'])) {
-            $config = $this->processConfiguration(new Configuration(), $container->getExtensionConfig('security'));
-            foreach ($config['providers'] as $provider) {
-                if (isset($provider['id'])) {
-                    $container->setAlias('p2_ratchet.client_provider', $provider['id']);
-
-                    return;
-                }
-            }
-        }
     }
 }

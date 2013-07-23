@@ -24,6 +24,7 @@ class Configuration implements ConfigurationInterface
         $rootNode
             ->addDefaultsIfNotSet()
             ->children()
+                ->scalarNode('provider')->cannotBeEmpty()->end()
                 ->scalarNode('address')->defaultValue(Bridge::ADDRESS)->end()
                 ->scalarNode('port')->defaultValue(Bridge::PORT)->end()
             ->end();

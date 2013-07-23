@@ -31,7 +31,7 @@ class Bridge implements MessageComponentInterface
     /**
      * @var int
      */
-    const PORT = 80;
+    const PORT = 8080;
 
     /**
      * @var ConnectionManagerInterface
