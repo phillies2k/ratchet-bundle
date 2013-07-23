@@ -24,16 +24,12 @@ class P2RatchetExtension extends Extension
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
 
-        $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
-        $loader->load('services.yml');
-
         if (! isset($config['provider'])) {
             throw new InvalidArgumentException('missing provider config.');
         }
 
-        if (! $container->hasDefinition($config['provider'])) {
-            throw new InvalidArgumentException('invalid provider service.');
-        }
+        $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
+        $loader->load('services.yml');
 
         $server = $container->getDefinition('p2_ratchet.server');
         $server
