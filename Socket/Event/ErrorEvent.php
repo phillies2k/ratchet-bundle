@@ -7,16 +7,16 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace P2\Bundle\RatchetBundle\WebSocket\Event;
+namespace P2\Bundle\RatchetBundle\Socket\Event;
 
 use Ratchet\ConnectionInterface;
 use Symfony\Component\EventDispatcher\Event;
 
 /**
- * Class CloseEvent
- * @package P2\Bundle\RatchetBundle\WebSocket\Event
+ * Class ErrorEvent
+ * @package P2\Bundle\RatchetBundle\Socket\Event
  */
-class CloseEvent extends Event implements SocketEventInterface
+class ErrorEvent extends Event
 {
     /**
      * @var \Ratchet\ConnectionInterface
@@ -24,11 +24,18 @@ class CloseEvent extends Event implements SocketEventInterface
     protected $connection;
 
     /**
-     * @param ConnectionInterface $connection
+     * @var \Exception
      */
-    public function __construct(ConnectionInterface $connection)
+    protected $exception;
+
+    /**
+     * @param ConnectionInterface $connection
+     * @param \Exception $exception
+     */
+    public function __construct(ConnectionInterface $connection, \Exception $exception)
     {
         $this->connection = $connection;
+        $this->exception = $exception;
     }
 
     /**
@@ -37,5 +44,13 @@ class CloseEvent extends Event implements SocketEventInterface
     public function getConnection()
     {
         return $this->connection;
+    }
+
+    /**
+     * @return \Exception
+     */
+    public function getException()
+    {
+        return $this->exception;
     }
 }

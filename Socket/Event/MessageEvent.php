@@ -7,16 +7,17 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace P2\Bundle\RatchetBundle\WebSocket\Event;
+namespace P2\Bundle\RatchetBundle\Socket\Event;
 
+use P2\Bundle\RatchetBundle\Socket\Payload;
 use Ratchet\ConnectionInterface;
 use Symfony\Component\EventDispatcher\Event;
 
 /**
- * Class ErrorEvent
- * @package P2\Bundle\RatchetBundle\WebSocket\Event
+ * Class MessageEvent
+ * @package P2\Bundle\RatchetBundle\Socket\Event
  */
-class ErrorEvent extends Event implements SocketEventInterface
+class MessageEvent extends Event
 {
     /**
      * @var \Ratchet\ConnectionInterface
@@ -24,22 +25,22 @@ class ErrorEvent extends Event implements SocketEventInterface
     protected $connection;
 
     /**
-     * @var \Exception
+     * @var \P2\Bundle\RatchetBundle\Socket\Payload
      */
-    protected $exception;
+    protected $payload;
 
     /**
      * @param ConnectionInterface $connection
-     * @param \Exception $exception
+     * @param Payload $payload
      */
-    public function __construct(ConnectionInterface $connection, \Exception $exception)
+    public function __construct(ConnectionInterface $connection, Payload $payload)
     {
         $this->connection = $connection;
-        $this->exception = $exception;
+        $this->payload = $payload;
     }
 
     /**
-     * @return \Ratchet\ConnectionInterface
+     * @return ConnectionInterface
      */
     public function getConnection()
     {
@@ -47,10 +48,10 @@ class ErrorEvent extends Event implements SocketEventInterface
     }
 
     /**
-     * @return \Exception
+     * @return Payload
      */
-    public function getException()
+    public function getPayload()
     {
-        return $this->exception;
+        return $this->payload;
     }
 }

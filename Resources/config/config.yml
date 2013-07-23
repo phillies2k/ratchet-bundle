@@ -12,3 +12,38 @@ framework:
     trusted_proxies: ~
     session:         ~
     fragments:       ~
+
+security:
+
+    role_hierarchy:
+        ROLE_USER: IS_AUTHENTICATED_ANONYMOUSLY
+        ROLE_ADMIN:       ROLE_USER
+        ROLE_SUPER_ADMIN: [ROLE_USER, ROLE_ADMIN, ROLE_ALLOWED_TO_SWITCH]
+
+    firewalls:
+        dev:
+            pattern:  ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+
+        login:
+            pattern:  ^/(login|register|lost-password)$
+            security: false
+
+        secured_area:
+            pattern: ^/
+            form_login:
+                login_path: /login
+                check_path: /login_check
+                username_parameter: _email
+            logout: ~
+
+        public_area:
+            pattern: ^/explore
+            anonymous: ~
+
+    providers:
+        documents:
+            id: security_provider
+
+p2_ratchet:
+    provider: security_provider

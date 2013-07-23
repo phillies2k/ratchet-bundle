@@ -7,18 +7,17 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace P2\Bundle\RatchetBundle\WebSocket\Event;
-
-use P2\Bundle\RatchetBundle\WebSocket\Payload\Payload;
+namespace P2\Bundle\RatchetBundle\Socket\Event;
+use P2\Bundle\RatchetBundle\Socket\ClientInterface;
 use Ratchet\ConnectionInterface;
 use Symfony\Component\EventDispatcher\Event;
 
 
 /**
- * Class MessageEvent
- * @package P2\Bundle\RatchetBundle\WebSocket\Event
+ * Class ConnectionEvent
+ * @package P2\Bundle\RatchetBundle\Socket\Event
  */
-class MessageEvent extends Event implements SocketEventInterface
+class ConnectionEvent extends Event
 {
     /**
      * @var \Ratchet\ConnectionInterface
@@ -26,22 +25,22 @@ class MessageEvent extends Event implements SocketEventInterface
     protected $connection;
 
     /**
-     * @var \P2\Bundle\RatchetBundle\WebSocket\Payload\Payload
+     * @var \P2\Bundle\RatchetBundle\Socket\ClientInterface
      */
-    protected $payload;
+    protected $client;
 
     /**
      * @param ConnectionInterface $connection
-     * @param Payload $payload
+     * @param ClientInterface $client
      */
-    public function __construct(ConnectionInterface $connection, Payload $payload)
+    public function __construct(ConnectionInterface $connection, ClientInterface $client = null)
     {
         $this->connection = $connection;
-        $this->payload = $payload;
+        $this->client = $client;
     }
 
     /**
-     * @return ConnectionInterface
+     * @return \Ratchet\ConnectionInterface
      */
     public function getConnection()
     {
@@ -49,10 +48,10 @@ class MessageEvent extends Event implements SocketEventInterface
     }
 
     /**
-     * @return Payload
+     * @return \P2\Bundle\RatchetBundle\Socket\ClientInterface
      */
-    public function getPayload()
+    public function getClient()
     {
-        return $this->payload;
+        return $this->client;
     }
 }

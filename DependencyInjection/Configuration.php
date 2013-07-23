@@ -20,9 +20,13 @@ class Configuration implements ConfigurationInterface
         $treeBuilder = new TreeBuilder();
         $rootNode = $treeBuilder->root('p2_ratchet');
 
-        // Here you should define the parameters that are allowed to
-        // configure your bundle. See the documentation linked above for
-        // more information on that topic.
+        $rootNode
+            ->addDefaultsIfNotSet()
+            ->children()
+                ->scalarNode('provider')->cannotBeEmpty()->end()
+                ->scalarNode('address')->defaultValue('0.0.0.0')->end()
+                ->scalarNode('port')->defaultValue(80)->end()
+            ->end();
 
         return $treeBuilder;
     }

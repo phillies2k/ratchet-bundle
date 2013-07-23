@@ -1,31 +1,30 @@
 parameters:
 
-    p2_ratchet.websocket.server.class: Ratchet\WebSocket\WsServer
+    p2_ratchet.bridge.class: P2\Bundle\RatchetBundle\Socket\Bridge
+    p2_ratchet.connection_manager.class: P2\Bundle\RatchetBundle\Socket\ConnectionManager
     p2_ratchet.server.class: Ratchet\Server\IoServer
-    p2_ratchet.bridge.class: P2\Bundle\RatchetBundle\WebSocket\Bridge
-
-    p2_ratchet.server_address: 0.0.0.0
-    p2_ratchet.server_port: 8080
+    p2_ratchet.websocket.server.class: Ratchet\WebSocket\WsServer
 
 services:
 
+    # Connection Manager
+    p2_ratchet.connection_manager:
+        class: %p2_ratchet.connection_manager.class%
+        arguments: [ @p2_ratchet.client_provider ]
+
+    # Socket Bridge
     p2_ratchet.bridge:
         class: %p2_ratchet.bridge.class%
-        arguments: [ @event_dispatcher ]
+        arguments: [ @p2_ratchet.connection_manager, @event_dispatcher ]
 
+    # WebSocket Server
     p2_ratchet.websocket_server:
         class: %p2_ratchet.websocket.server.class%
         arguments: [ @p2_ratchet.bridge ]
 
-    # IoServer:factory(application, port, address)
+    # IoServer
     p2_ratchet.server:
         class: %p2_ratchet.server.class%
         factory_class: %p2_ratchet.server.class%
         factory_method: factory
-        arguments: [ @p2_ratchet.websocket_server, %p2_ratchet.server_port%, %p2_ratchet.server_address% ]
-
-
-    echo_app:
-        class: P2\Bundle\RatchetBundle\WebSocket\Application\EchoApplication
-        tags:
-            - { name: 'kernel.event_subscriber' }
+        arguments: [ @p2_ratchet.websocket_server ]

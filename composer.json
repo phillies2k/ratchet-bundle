@@ -11,6 +11,7 @@
     "minimum-stability": "stable",
     "require": {
         "symfony/framework-bundle": "~2.3",
+        "symfony/security-bundle": "~2.3",
         "symfony/console": "~2.3",
         "symfony/finder": "~2.3",
         "symfony/yaml": "~2.3",

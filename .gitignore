@@ -2,6 +2,5 @@
 /.idea/
 /cache/
 /logs/
-/Resources/bin/cache
-/Resources/bin/logs
+/Resources/bin/
 /Resources/config/config.yml

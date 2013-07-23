@@ -7,11 +7,11 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace P2\Bundle\RatchetBundle\WebSocket\Payload;
+namespace P2\Bundle\RatchetBundle\Socket;
 
 /**
  * Class Payload
- * @package P2\Bundle\RatchetBundle\WebSocket\Payload
+ * @package P2\Bundle\RatchetBundle\Socket
  */
 class Payload
 {
@@ -25,28 +25,44 @@ class Payload
      */
     protected $event;
 
-    /**
-     * @param string $raw
-     * @throws \InvalidArgumentException
-     */
-    public function __construct($raw)
+    public static function createFromJson($json)
+    {
+        list($event, $data) = static::decode($json);
+
+        return new static($event, $data);
+    }
+
+    public static function decode($json)
     {
         try {
-            $data = json_decode($raw, true);
+            $data = json_decode($json, true);
         } catch (\Exception $e) {
-            throw new \InvalidArgumentException('Invalid data format');
+            throw new \InvalidArgumentException('Invalid json format');
         }
 
         if (! isset($data['event'])) {
-            throw new \InvalidArgumentException('Invalid data: no event');
+            throw new \InvalidArgumentException('Invalid json data: no event');
         }
 
         if (! isset($data['data'])) {
-            throw new \InvalidArgumentException('Invalid data: no data');
+            throw new \InvalidArgumentException('Invalid json data: no data');
         }
 
-        $this->event = $data['event'];
-        $this->data = $data['data'];
+        return array(
+            $data['event'],
+            $data['data'],
+        );
+    }
+
+    /**
+     * @param string $event
+     * @param mixed $data
+     * @throws \InvalidArgumentException
+     */
+    public function __construct($event, $data = null)
+    {
+        $this->event = $event;
+        $this->data = $data;
     }
 
     /**

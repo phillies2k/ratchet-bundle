@@ -26,5 +26,25 @@ class P2RatchetExtension extends Extension
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');
+
+        if (! isset($config['provider'])) {
+            throw new InvalidArgumentException('missing provider config.');
+        }
+
+        if (! $container->hasDefinition($config['provider'])) {
+            throw new InvalidArgumentException('invalid provider service.');
+        }
+
+        $server = $container->getDefinition('p2_ratchet.server');
+        $server
+            ->addArgument($config['address'])
+            ->addArgument($config['port']);
+
+        $container->setParameter(
+            'security.authentication.success_handler.class',
+            'P2\Bundle\RatchetBundle\Security\AuthenticationSuccessHandler'
+        );
+
+        $container->setAlias('p2_ratchet.client_provider', $config['provider']);
     }
 }
