@@ -42,11 +42,6 @@ class P2RatchetExtension extends Extension implements PrependExtensionInterface
         );
 
         $container->setAlias('p2_ratchet.client_provider', $config['provider']);
-
-        $container->setParameter(
-            'security.authentication.success_handler.class',
-            'P2\Bundle\RatchetBundle\Security\AuthenticationSuccessHandler'
-        );
     }
 
     /**
