@@ -42,18 +42,10 @@ CLIENT_SCRIPT;
         );
     }
 
-    public function getClientScript(\Twig_Environment $env)
+    public function getClientScript($debug, ClientInterface $client = null, $accessToken = '')
     {
-        $globals = $env->getGlobals();
-        $app = $globals['app'];
-        $debug = $app['debug'];
-
-        if (isset($app['user'])) {
-            /** @var ClientInterface $user */
-            $user = $app['user'];
-            $accessToken = $user->getAccessToken();
-        } else {
-            $accessToken = '';
+        if ($client !== null) {
+            $accessToken = $client->getAccessToken();
         }
 
         return strtr(static::$script, array(
