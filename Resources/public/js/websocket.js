@@ -76,6 +76,12 @@
         eventHandlers[eventHandlers.length] = handler;
     };
 
+    Ratchet.registerEventHandler('socket.auth.success', function(client) {
+        this.client = client;
+    });
+
+    window.Ratchet = Ratchet;
+
     /**
      * private methods
      */
@@ -93,17 +99,10 @@
     }
 
     function onOpen(e) {
-        console.log('connection established.');
-
-        var token = window.wsAccessToken;
-        if (token && token.length) {
-            this.emit('socket.auth.request', token);
-        }
+        this.emit('socket.auth.request', window.p2_ratchet_access_token);
     }
 
     function onClose(e) {}
     function onError(e) {}
-
-    window.Ratchet = Ratchet;
 
 }).call(window);

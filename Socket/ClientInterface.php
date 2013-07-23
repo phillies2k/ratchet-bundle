@@ -13,7 +13,7 @@ namespace P2\Bundle\RatchetBundle\Socket;
  * Interface ClientInterface
  * @package P2\Bundle\RatchetBundle\Socket
  */
-interface ClientInterface 
+interface ClientInterface
 {
     /**
      * Sets the websocket access token for this client
@@ -29,4 +29,12 @@ interface ClientInterface
      * @return null|string
      */
     public function getAccessToken();
+
+    /**
+     * Returns the array of public client data which will be transferred to the websocket frontend client on successful
+     * authentication. The websocket access token for this client should always be returned.
+     *
+     * @return array
+     */
+    public function jsonSerialize();
 }

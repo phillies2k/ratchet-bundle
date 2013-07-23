@@ -127,10 +127,12 @@ class Bridge implements MessageComponentInterface
                         new ConnectionEvent($from, $client)
                     );
 
-                    $this->log(sprintf('MSG <info>%s</info> - #%s', $payload->getEvent(), $payload->getData()));
+                    $this->log(sprintf('EVT <info>%s</info> #%s', $payload->getEvent(), $payload->getData()));
 
-                    $response = new Payload(Events::SOCKET_AUTH_SUCCESS, array('success' => true));
+                    $response = new Payload(Events::SOCKET_AUTH_SUCCESS, $client->jsonSerialize());
                     $from->send($response->encode());
+
+                    $this->log(sprintf('MSG <info>#%s</info> - #%s', $from->resourceId, $response->encode()));
 
                     break;
                 default:
