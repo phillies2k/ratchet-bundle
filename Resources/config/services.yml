@@ -1,5 +1,6 @@
 parameters:
 
+    p2_ratchet.authentication_handler.class: P2\Bundle\RatchetBundle\Authentication\AuthenticationSuccessHandler
     p2_ratchet.bridge.class: P2\Bundle\RatchetBundle\Socket\Bridge
     p2_ratchet.connection_manager.class: P2\Bundle\RatchetBundle\Socket\ConnectionManager
     p2_ratchet.server.class: Ratchet\Server\IoServer
@@ -7,23 +8,30 @@ parameters:
 
 services:
 
-    # Connection Manager
+    # socket connection manager
     p2_ratchet.connection_manager:
         class: %p2_ratchet.connection_manager.class%
         arguments: [ @p2_ratchet.client_provider ]
 
-    # Socket Bridge
+    # socket bridge
     p2_ratchet.bridge:
         class: %p2_ratchet.bridge.class%
         arguments: [ @p2_ratchet.connection_manager, @event_dispatcher ]
 
-    # WebSocket Server
+    # websocket server
     p2_ratchet.websocket_server:
         class: %p2_ratchet.websocket.server.class%
         arguments: [ @p2_ratchet.bridge ]
 
-    # IoServer
+    # io server
     p2_ratchet.server:
         class: %p2_ratchet.server.class%
         factory_class: %p2_ratchet.server.class%
         factory_method: factory
+
+    # authentication listener
+    p2_ratchet.authentication_handler:
+        class: %p2_ratchet.authentication_handler.class%
+        arguments: [ @p2_ratchet.client_provider ]
+        tags:
+            - { name: kernel.event_listener, event: security.authentication.success, method: onAuthenticationSuccess }

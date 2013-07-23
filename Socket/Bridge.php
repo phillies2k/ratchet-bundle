@@ -36,6 +36,36 @@ class Bridge implements MessageComponentInterface
     const PORT = 8080;
 
     /**
+     * @var string
+     */
+    const SOCKET_CLOSE = 'socket.close';
+
+    /**
+     * @var string
+     */
+    const SOCKET_DATA = 'socket.data';
+
+    /**
+     * @var string
+     */
+    const SOCKET_ERROR = 'socket.error';
+
+    /**
+     * @var string
+     */
+    const SOCKET_OPEN = 'socket.open';
+
+    /**
+     * @var string
+     */
+    const SOCKET_AUTH_REQUEST = 'socket.auth.request';
+
+    /**
+     * @var string
+     */
+    const SOCKET_AUTH_SUCCESS = 'socket.auth.success';
+
+    /**
      * @var ConnectionManagerInterface
      */
     protected $connectionManager;
@@ -68,10 +98,10 @@ class Bridge implements MessageComponentInterface
      */
     public function onOpen(ConnectionInterface $conn)
     {
-        $payload = new Payload(Events::SOCKET_OPEN, 'require_authentication');
+        $payload = new Payload(static::SOCKET_OPEN, 'require_authentication');
         $conn->send($payload->encode());
 
-        $this->eventDispatcher->dispatch(Events::SOCKET_OPEN, new ConnectionEvent($conn));
+        $this->eventDispatcher->dispatch(static::SOCKET_OPEN, new ConnectionEvent($conn));
         $this->log(sprintf('NEW <info>#%s</info>', $conn->resourceId));
     }
 
@@ -85,7 +115,7 @@ class Bridge implements MessageComponentInterface
         if (null !== $client = $this->connectionManager->getClientForConnection($conn)) {
             $this->connectionManager->removeConnection($conn);
 
-            $this->eventDispatcher->dispatch(Events::SOCKET_CLOSE, new CloseEvent($conn, $client));
+            $this->eventDispatcher->dispatch(static::SOCKET_CLOSE, new CloseEvent($conn, $client));
             $this->log(sprintf('CLOSE CLIENT <info>#%s</info>', $client->getAccessToken()));
         }
 
@@ -103,7 +133,7 @@ class Bridge implements MessageComponentInterface
      */
     function onError(ConnectionInterface $conn, \Exception $e)
     {
-        $this->eventDispatcher->dispatch(Events::SOCKET_ERROR, new ErrorEvent($conn, $e));
+        $this->eventDispatcher->dispatch(static::SOCKET_ERROR, new ErrorEvent($conn, $e));
         $this->log(sprintf('ERROR <error>%s</error>', $e->getMessage()));
     }
 
@@ -119,17 +149,17 @@ class Bridge implements MessageComponentInterface
             $payload = Payload::createFromJson($msg);
 
             switch ($payload->getEvent()) {
-                case Events::SOCKET_AUTH_REQUEST:
+                case static::SOCKET_AUTH_REQUEST:
                     $client = $this->connectionManager->attachConnection($from, $payload->getData());
 
                     $this->eventDispatcher->dispatch(
-                        Events::SOCKET_AUTH_SUCCESS,
+                        static::SOCKET_AUTH_SUCCESS,
                         new ConnectionEvent($from, $client)
                     );
 
                     $this->log(sprintf('EVT <info>%s</info> #%s', $payload->getEvent(), $payload->getData()));
 
-                    $response = new Payload(Events::SOCKET_AUTH_SUCCESS, $client->jsonSerialize());
+                    $response = new Payload(static::SOCKET_AUTH_SUCCESS, $client->jsonSerialize());
                     $from->send($response->encode());
 
                     $this->log(sprintf('MSG <info>#%s</info> - #%s', $from->resourceId, $response->encode()));
