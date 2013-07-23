@@ -1,14 +1,15 @@
 {
     "name": "p2/ratchet-bundle",
-    "description": "Symfony WebSocket Bundle using Ratchet",
+    "description": "Symfony WebSocket bundle using the Ratchet WebSocket library",
+    "keywords": [ "websocket", "ratchet", "symfony", "bundle" ],
     "license": "MIT",
+    "homepage": "https://github.com/phillies2k/ratchet-bundle",
     "authors": [
         {
             "name": "Philipp Boes",
             "email": "mostgreedy@gmail.com"
         }
     ],
-    "minimum-stability": "stable",
     "require": {
         "symfony/framework-bundle": "~2.3",
         "symfony/security-bundle": "~2.3",
@@ -20,5 +21,6 @@
     "autoload": {
         "psr-0": { "P2\\Bundle\\RatchetBundle\\" : "" }
     },
-    "target-dir": "P2/Bundle/RatchetBundle"
+    "target-dir": "P2/Bundle/RatchetBundle",
+    "minimum-stability": "stable"
 }
