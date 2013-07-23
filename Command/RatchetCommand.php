@@ -26,6 +26,7 @@ class RatchetCommand extends ContainerAwareCommand
     protected function configure()
     {
         $this
+            ->addArgument(static::ARG_ADDRESS, InputArgument::OPTIONAL, '')
             ->setDescription('Starts a web socket server')
             ->setHelp('ratchet:start')
             ->setName('ratchet:start');
@@ -44,13 +45,7 @@ class RatchetCommand extends ContainerAwareCommand
             /** @var \Ratchet\Server\IoServer $server */
             $server = $this->getContainer()->get('p2_ratchet.server');
 
-            $output->writeln(
-                sprintf(
-                    'Server listening on %s:%d',
-                    $this->getContainer()->getParameter('p2_ratchet.server_address'),
-                    $this->getContainer()->getParameter('p2_ratchet.server_port')
-                )
-            );
+            $output->writeln('<info>server starting</info>');
 
             $server->run();
 

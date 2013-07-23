@@ -22,12 +22,4 @@ interface ClientProviderInterface
      * @return ClientInterface
      */
     public function findByAccessToken($accessToken);
-
-    /**
-     * Persists the client to the underlying data layer.
-     *
-     * @param ClientInterface $client
-     * @return void
-     */
-    public function update(ClientInterface $client);
 }

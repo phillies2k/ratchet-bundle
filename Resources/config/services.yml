@@ -27,4 +27,3 @@ services:
         class: %p2_ratchet.server.class%
         factory_class: %p2_ratchet.server.class%
         factory_method: factory
-        arguments: [ @p2_ratchet.websocket_server, %p2_ratchet.server.address%, %p2_ratchet.server.port% ]
