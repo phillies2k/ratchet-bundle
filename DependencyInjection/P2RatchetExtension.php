@@ -34,7 +34,7 @@ class P2RatchetExtension extends Extension
         $server = $container->getDefinition('p2_ratchet.server');
         $server->setArguments(
             array(
-                new Reference('p2_ratchet.connection_manager'),
+                new Reference('p2_ratchet.websocket_server'),
                 $config['port'],
                 $config['address']
             )
