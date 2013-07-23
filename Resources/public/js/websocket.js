@@ -47,6 +47,8 @@
         };
     };
 
+    Ratchet.prototype.authenticated = false;
+
     Ratchet.prototype.emit = function(event, data) {
         try {
             var encoded = JSON.stringify({ event: event, data: data });
@@ -59,8 +61,6 @@
 
         return false;
     };
-
-    Ratchet.prototype.authenticated = false;
 
     Ratchet.registerEventHandler = function(event, handler) {
         Ratchet.prototype.on.call(this, event, handler);
