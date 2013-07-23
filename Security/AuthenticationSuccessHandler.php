@@ -37,8 +37,7 @@ class AuthenticationSuccessHandler extends DefaultAuthenticationSuccessHandler
 
         /** @var ClientInterface $user */
         if ($user instanceof ClientInterface) {
-            $token = hash('sha256', uniqid(microtime(true)));
-            $user->setAccessToken($token);
+            $user->setAccessToken(hash('sha256', uniqid(microtime(true))));
         }
 
         return parent::onAuthenticationSuccess($request, $token);
