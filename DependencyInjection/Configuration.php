@@ -25,7 +25,7 @@ class Configuration implements ConfigurationInterface
             ->children()
                 ->scalarNode('provider')->cannotBeEmpty()->end()
                 ->scalarNode('address')->defaultValue('0.0.0.0')->end()
-                ->scalarNode('port')->defaultValue(80)->end()
+                ->scalarNode('port')->defaultValue(8080)->end()
             ->end();
 
         return $treeBuilder;

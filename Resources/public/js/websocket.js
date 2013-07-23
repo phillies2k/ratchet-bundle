@@ -67,10 +67,10 @@
     };
 
     Ratchet.prototype.on = function(event, handler) {
-        var eventHandlers = handlers[event];
+        var eventHandlers = socketEventHandler[event];
 
         if (! eventHandlers) {
-            eventHandlers = handlers[event] = [];
+            eventHandlers = socketEventHandler[event] = [];
         }
 
         eventHandlers[eventHandlers.length] = handler;
@@ -92,16 +92,17 @@
         }
     }
 
-    function onOpen(e) {}
-    function onClose(e) {}
-    function onError(e) {}
+    function onOpen(e) {
+        console.log('connection established.');
 
-    Ratchet.registerEventHandler('socket.open', function() {
         var token = window.wsAccessToken;
         if (token && token.length) {
             this.emit('socket.auth.request', token);
         }
-    });
+    }
+
+    function onClose(e) {}
+    function onError(e) {}
 
     window.Ratchet = Ratchet;
 

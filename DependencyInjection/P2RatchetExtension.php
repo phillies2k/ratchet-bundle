@@ -30,10 +30,8 @@ class P2RatchetExtension extends Extension
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');
 
-        $server = $container->getDefinition('p2_ratchet.server');
-        $server
-            ->addArgument($config['address'])
-            ->addArgument($config['port']);
+        $container->setParameter('p2_ratchet.server.address', $config['address']);
+        $container->setParameter('p2_ratchet.server.port', $config['port']);
 
         $container->setParameter(
             'security.authentication.success_handler.class',
