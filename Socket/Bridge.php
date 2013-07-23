@@ -72,7 +72,7 @@ class Bridge implements MessageComponentInterface
         $conn->send($payload->encode());
 
         $this->eventDispatcher->dispatch(Events::SOCKET_OPEN, new ConnectionEvent($conn));
-        $this->output->writeln(sprintf('new connection: <info>#%s</info>', $conn->resourceId));
+        $this->log(sprintf('NEW <info>#%s</info>', $conn->resourceId));
     }
 
     /**
@@ -84,10 +84,14 @@ class Bridge implements MessageComponentInterface
     {
         if (null !== $client = $this->connectionManager->getClientForConnection($conn)) {
             $this->connectionManager->removeConnection($conn);
-            $conn->close();
 
             $this->eventDispatcher->dispatch(Events::SOCKET_CLOSE, new CloseEvent($conn, $client));
+            $this->log(sprintf('CLOSE CLIENT <info>#%s</info>', $client->getAccessToken()));
         }
+
+        $conn->close();
+
+        $this->log(sprintf('CLOSE <info>#%s</info>', $conn->resourceId));
     }
 
     /**
@@ -100,6 +104,7 @@ class Bridge implements MessageComponentInterface
     function onError(ConnectionInterface $conn, \Exception $e)
     {
         $this->eventDispatcher->dispatch(Events::SOCKET_ERROR, new ErrorEvent($conn, $e));
+        $this->log(sprintf('ERROR <error>%s</error>', $e->getMessage()));
     }
 
     /**
@@ -122,6 +127,8 @@ class Bridge implements MessageComponentInterface
                         new ConnectionEvent($from, $client)
                     );
 
+                    $this->log(sprintf('MSG <info>%s</info> - #%s', $payload->getEvent(), $payload->getData()));
+
                     $response = new Payload(Events::SOCKET_AUTH_SUCCESS, array('success' => true));
                     $from->send($response->encode());
 
@@ -131,5 +138,21 @@ class Bridge implements MessageComponentInterface
             }
         } catch (\Exception $e) {
         }
+    }
+
+    /**
+     * @param string $message
+     */
+    protected function log($message)
+    {
+        $timestamp = date('Y.m.d H:i', time());
+
+        $this->output->writeln(
+            sprintf(
+                "\t<comment>[%s]</comment> - %s",
+                $timestamp,
+                $message
+            )
+        );
     }
 }

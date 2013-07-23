@@ -22,4 +22,11 @@ interface ClientInterface
      * @return ClientInterface
      */
     public function setAccessToken($token);
+
+    /**
+     * Returns the websocket access token for this client if any, or null.
+     *
+     * @return null|string
+     */
+    public function getAccessToken();
 }
