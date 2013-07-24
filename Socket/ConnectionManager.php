@@ -9,6 +9,8 @@
  */
 namespace P2\Bundle\RatchetBundle\Socket;
 
+use P2\Bundle\RatchetBundle\Socket\Exception\UnknownClientException;
+use P2\Bundle\RatchetBundle\Socket\Exception\UnknownConnectionException;
 use Ratchet\ConnectionInterface;
 
 /**
@@ -37,22 +39,28 @@ class ConnectionManager implements ConnectionManagerInterface
     }
 
     /**
-     * @param ConnectionInterface $connection
-     * @param string $token
-     * @return ClientInterface
-     * @throws \InvalidArgumentException
+     * Attaches a client for the given connection, The client is identified by the given access token.
+     *
+     * @param ConnectionInterface $connection The connection to use
+     * @param string $token The access token
+     *
+     * @return ClientInterface The attached client
+     * @throws UnknownConnectionException When the given connection is not managed.
+     * @throws UnknownClientException When no client could be found for the token.
      */
-    public function attachConnection(ConnectionInterface $connection, $token)
+    public function attachClient(ConnectionInterface $connection, $token)
     {
         if (! $this->connections->offsetExists($connection)) {
-            if (null === $client = $this->clientProvider->findByAccessToken($token)) {
-                throw new \InvalidArgumentException();
-            }
-
-            $this->connections->offsetSet($connection, $client);
+            throw new UnknownConnectionException();
         }
 
-        return $this->connections->offsetGet($connection);
+        if (null === $client = $this->clientProvider->findByAccessToken($token)) {
+            throw new UnknownClientException();
+        }
+
+        $this->connections->offsetSet($connection, $client);
+
+        return $client;
     }
 
     /**

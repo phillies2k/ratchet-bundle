@@ -7,15 +7,15 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace P2\Bundle\RatchetBundle\Socket\Event;
+namespace P2\Bundle\RatchetBundle\Event;
+
 use P2\Bundle\RatchetBundle\Socket\ClientInterface;
 use Ratchet\ConnectionInterface;
 use Symfony\Component\EventDispatcher\Event;
 
-
 /**
  * Class ConnectionEvent
- * @package P2\Bundle\RatchetBundle\Socket\Event
+ * @package P2\Bundle\RatchetBundle\Event
  */
 class ConnectionEvent extends Event
 {

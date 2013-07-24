@@ -7,12 +7,12 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace P2\Bundle\RatchetBundle\Socket\Exception;
+namespace P2\Bundle\RatchetBundle\Exception;
 
 /**
- * Class UnknownClientException
- * @package P2\Bundle\RatchetBundle\Socket\Exception
+ * Class UnknownConnectionException
+ * @package P2\Bundle\RatchetBundle\Exception
  */
-class UnknownClientException extends \Exception
+class UnknownConnectionException extends \Exception
 {
 }

@@ -7,7 +7,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace P2\Bundle\RatchetBundle\Socket\Authentication;
+namespace P2\Bundle\RatchetBundle\Security;
 
 use P2\Bundle\RatchetBundle\Socket\ClientInterface;
 use P2\Bundle\RatchetBundle\Socket\ClientProviderInterface;
@@ -15,7 +15,7 @@ use Symfony\Component\Security\Core\Event\AuthenticationEvent;
 
 /**
  * Class AuthenticationSuccessHandler
- * @package P2\Bundle\RatchetBundle\Socket\Authentication
+ * @package P2\Bundle\RatchetBundle\Security
  */
 class AuthenticationSuccessHandler
 {

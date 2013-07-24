@@ -7,17 +7,17 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace P2\Bundle\RatchetBundle\Socket\Event;
+namespace P2\Bundle\RatchetBundle\Event;
 
-use P2\Bundle\RatchetBundle\Socket\ClientInterface;
+use P2\Bundle\RatchetBundle\Socket\Payload;
 use Ratchet\ConnectionInterface;
 use Symfony\Component\EventDispatcher\Event;
 
 /**
- * Class CloseEvent
- * @package P2\Bundle\RatchetBundle\Socket\Event
+ * Class MessageEvent
+ * @package P2\Bundle\RatchetBundle\Event
  */
-class CloseEvent extends Event
+class MessageEvent extends Event
 {
     /**
      * @var \Ratchet\ConnectionInterface
@@ -25,22 +25,22 @@ class CloseEvent extends Event
     protected $connection;
 
     /**
-     * @var \P2\Bundle\RatchetBundle\Socket\ClientInterface
+     * @var \P2\Bundle\RatchetBundle\Socket\Payload
      */
-    protected $client;
+    protected $payload;
 
     /**
      * @param ConnectionInterface $connection
-     * @param ClientInterface $client
+     * @param Payload $payload
      */
-    public function __construct(ConnectionInterface $connection, ClientInterface $client)
+    public function __construct(ConnectionInterface $connection, Payload $payload)
     {
         $this->connection = $connection;
-        $this->client = $client;
+        $this->payload = $payload;
     }
 
     /**
-     * @return \Ratchet\ConnectionInterface
+     * @return ConnectionInterface
      */
     public function getConnection()
     {
@@ -48,10 +48,10 @@ class CloseEvent extends Event
     }
 
     /**
-     * @return \P2\Bundle\RatchetBundle\Socket\ClientInterface
+     * @return Payload
      */
-    public function getClient()
+    public function getPayload()
     {
-        return $this->client;
+        return $this->payload;
     }
 }

@@ -10,13 +10,14 @@
 namespace P2\Bundle\RatchetBundle\Socket;
 
 use P2\Bundle\RatchetBundle\Socket\Exception\UnknownClientException;
+use P2\Bundle\RatchetBundle\Socket\Exception\UnknownConnectionException;
 use Ratchet\ConnectionInterface;
 
 /**
  * Interface ConnectionManagerInterface
  * @package P2\Bundle\RatchetBundle\Socket
  */
-interface ConnectionManagerInterface 
+interface ConnectionManagerInterface
 {
     /**
      * Returns the client for the given connection, or null.
@@ -28,15 +29,16 @@ interface ConnectionManagerInterface
     public function getClientForConnection(ConnectionInterface $connection);
 
     /**
-     * Attaches a client for the given connection, The client is identified by the given access token
+     * Attaches a client for the given connection, The client is identified by the given access token.
      *
-     * @param ConnectionInterface $connection
-     * @param string $token
+     * @param ConnectionInterface $connection The connection to use
+     * @param string $token The access token
      *
-     * @return ClientInterface
-     * @throws UnknownClientException When no client could be found for the given token.
+     * @return ClientInterface The attached client
+     * @throws UnknownConnectionException When the given connection is not managed.
+     * @throws UnknownClientException When no client could be found for the token.
      */
-    public function attachConnection(ConnectionInterface $connection, $token);
+    public function attachClient(ConnectionInterface $connection, $token);
 
     /**
      * Removes a managed client connection identified by the given connection.

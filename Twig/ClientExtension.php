@@ -7,15 +7,15 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace P2\Bundle\RatchetBundle\Socket\Bridge\Twig;
+namespace P2\Bundle\RatchetBundle\Twig;
 
 use P2\Bundle\RatchetBundle\Socket\ClientInterface;
 
 /**
- * Class RatchetClientExtension
- * @package P2\Bundle\RatchetBundle\Socket\Bridge\Twig
+ * Class ClientExtension
+ * @package P2\Bundle\RatchetBundle\Twig
  */
-class RatchetClientExtension extends \Twig_Extension
+class ClientExtension extends \Twig_Extension
 {
     /**
      * @var string

@@ -9,10 +9,10 @@
  */
 namespace P2\Bundle\RatchetBundle\Socket;
 
-use P2\Bundle\RatchetBundle\Socket\Event\CloseEvent;
-use P2\Bundle\RatchetBundle\Socket\Event\ConnectionEvent;
-use P2\Bundle\RatchetBundle\Socket\Event\ErrorEvent;
-use P2\Bundle\RatchetBundle\Socket\Event\MessageEvent;
+use P2\Bundle\RatchetBundle\Event\CloseEvent;
+use P2\Bundle\RatchetBundle\Event\ConnectionEvent;
+use P2\Bundle\RatchetBundle\Event\ErrorEvent;
+use P2\Bundle\RatchetBundle\Event\MessageEvent;
 use Ratchet\ConnectionInterface;
 use Ratchet\MessageComponentInterface;
 use Symfony\Component\Console\Output\ConsoleOutput;
@@ -119,14 +119,11 @@ class Bridge implements MessageComponentInterface
     {
         if (null !== $client = $this->connectionManager->getClientForConnection($conn)) {
             $this->connectionManager->removeConnection($conn);
+            $conn->close();
 
             $this->eventDispatcher->dispatch(static::SOCKET_CLOSE, new CloseEvent($conn, $client));
-            $this->log('CLOSE CLIENT', sprintf('<info>#%s</info>', $client->getAccessToken()));
+            $this->log('CLOSE', sprintf('<info>#%d</info> %s', $conn->resourceId, $client->getAccessToken()));
         }
-
-        $conn->close();
-
-        $this->log('CLOSE', sprintf('<info>#%s</info>', $conn->resourceId));
     }
 
     /**
@@ -160,18 +157,15 @@ class Bridge implements MessageComponentInterface
 
             switch ($payload->getEvent()) {
                 case static::SOCKET_AUTH_REQUEST:
-                    $client = $this->connectionManager->attachConnection($from, $payload->getData());
-
-                    $this->eventDispatcher->dispatch(
-                        static::SOCKET_AUTH_SUCCESS,
-                        new ConnectionEvent($from, $client)
-                    );
-
-                    $this->log('EVT', sprintf('<info>%s</info> %s', $payload->getEvent(), $payload->getData()));
+                    $client = $this->connectionManager->attachClient($from, $payload->getData());
 
                     $response = new Payload(static::SOCKET_AUTH_SUCCESS, $client->jsonSerialize());
+
                     $from->send($response->encode());
 
+                    $this->eventDispatcher->dispatch(static::SOCKET_AUTH_SUCCESS, new ConnectionEvent($from, $client));
+
+                    $this->log('EVT', sprintf('<info>%s</info> %s', $payload->getEvent(), $payload->getData()));
                     $this->log('MSG', sprintf('<info>%s</info> %s', $from->resourceId, $response->encode()));
 
                     break;
