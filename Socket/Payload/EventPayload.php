@@ -87,17 +87,19 @@ class EventPayload implements PayloadInterface
     {
         if (static::isValid($data)) {
 
-            return new static($data);
+            return new static($data['event'], $data['data']);
         }
 
         return false;
     }
 
     /**
+     * @param string $event
      * @param array $data
      */
-    protected function __construct(array $data = array())
+    public function __construct($event, array $data = array())
     {
+        $this->event = $event;
         $this->data = $data;
     }
 
@@ -108,7 +110,7 @@ class EventPayload implements PayloadInterface
      */
     public function getData()
     {
-        return $this->data['data'];
+        return $this->data;
     }
 
     /**
@@ -116,6 +118,6 @@ class EventPayload implements PayloadInterface
      */
     public function getEvent()
     {
-        return $this->data['event'];
+        return $this->event;
     }
 }

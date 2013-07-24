@@ -110,14 +110,8 @@ class ConnectionManager implements ConnectionManagerInterface
 
             $this->eventDispatcher->dispatch(Events::SOCKET_AUTH_SUCCESS, new ConnectionEvent($connection));
 
-            $connection->emit(
-                EventPayload::createFromArray(
-                    array(
-                        'event' => Events::SOCKET_AUTH_SUCCESS,
-                        'data' => $client->jsonSerialize()
-                    )
-                )
-            );
+            $payload = new EventPayload(Events::SOCKET_AUTH_SUCCESS, $client->jsonSerialize());
+            $connection->emit($payload);
 
             return $connection;
         }
