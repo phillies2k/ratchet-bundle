@@ -9,10 +9,11 @@
  */
 namespace P2\Bundle\RatchetBundle\Socket;
 
-use P2\Bundle\RatchetBundle\Event\MessageEvent;
-use P2\Bundle\RatchetBundle\Exception\ClientAuthenticationException;
-use P2\Bundle\RatchetBundle\Exception\UnknownConnectionException;
 use P2\Bundle\RatchetBundle\Socket\Connection\ConnectionManagerInterface;
+use P2\Bundle\RatchetBundle\Socket\Event\ConnectionEvent;
+use P2\Bundle\RatchetBundle\Socket\Event\MessageEvent;
+use P2\Bundle\RatchetBundle\Socket\Exception\ClientAuthenticationException;
+use P2\Bundle\RatchetBundle\Socket\Exception\UnknownConnectionException;
 use P2\Bundle\RatchetBundle\Socket\Payload\EventPayload;
 use Ratchet\ConnectionInterface;
 use Ratchet\MessageComponentInterface;
@@ -106,7 +107,7 @@ class Bridge implements MessageComponentInterface
             $payload = EventPayload::createFromJson($msg);
 
             switch ($payload->getEvent()) {
-                case Events::SOCKET_AUTH_REQUEST:
+                case ConnectionEvent::SOCKET_AUTH_REQUEST:
                     if (false === $connection = $this->connectionManager->authenticate($from, $payload->getData())) {
                         throw new ClientAuthenticationException(
                             sprintf(
@@ -122,7 +123,7 @@ class Bridge implements MessageComponentInterface
                             '<info>%s (#%s)</info> %s - %s',
                             $connection->getRemoteAddress(),
                             $connection->getId(),
-                            Events::SOCKET_AUTH_SUCCESS,
+                            ConnectionEvent::SOCKET_AUTH_SUCCESS,
                             $connection->getClient()->jsonSerialize()
                         )
                     );

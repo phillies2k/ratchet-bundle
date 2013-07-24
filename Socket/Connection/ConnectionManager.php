@@ -9,10 +9,9 @@
  */
 namespace P2\Bundle\RatchetBundle\Socket\Connection;
 
-use P2\Bundle\RatchetBundle\Event\ConnectionEvent;
-use P2\Bundle\RatchetBundle\Exception\UnknownConnectionException;
+use P2\Bundle\RatchetBundle\Socket\Event\ConnectionEvent;
+use P2\Bundle\RatchetBundle\Socket\Exception\UnknownConnectionException;
 use P2\Bundle\RatchetBundle\Socket\ClientProviderInterface;
-use P2\Bundle\RatchetBundle\Socket\Events;
 use P2\Bundle\RatchetBundle\Socket\Payload\EventPayload;
 use Ratchet\ConnectionInterface as SocketConnection;
 use Symfony\Component\EventDispatcher\EventDispatcher;
@@ -75,7 +74,7 @@ class ConnectionManager implements ConnectionManagerInterface
 
             $this->connections->offsetSet($socketConnection, $connection);
 
-            $this->eventDispatcher->dispatch(Events::SOCKET_OPEN, new ConnectionEvent($connection));
+            $this->eventDispatcher->dispatch(ConnectionEvent::SOCKET_OPEN, new ConnectionEvent($connection));
         }
     }
 
@@ -86,7 +85,7 @@ class ConnectionManager implements ConnectionManagerInterface
     {
         if ($this->connections->offsetExists($socketConnection)) {
             if (null !== $connection = $this->connections->offsetGet($socketConnection)) {
-                $this->eventDispatcher->dispatch(Events::SOCKET_CLOSE, new ConnectionEvent($connection));
+                $this->eventDispatcher->dispatch(ConnectionEvent::SOCKET_CLOSE, new ConnectionEvent($connection));
             }
 
             $this->connections->detach($socketConnection);
@@ -108,20 +107,20 @@ class ConnectionManager implements ConnectionManagerInterface
         if (null !== $client = $this->clientProvider->findByAccessToken($accessToken)) {
             $connection->setClient($client);
 
-            $this->eventDispatcher->dispatch(Events::SOCKET_AUTH_SUCCESS, new ConnectionEvent($connection));
+            $this->eventDispatcher->dispatch(ConnectionEvent::SOCKET_AUTH_SUCCESS, new ConnectionEvent($connection));
 
-            $payload = new EventPayload(Events::SOCKET_AUTH_SUCCESS, $client->jsonSerialize());
+            $payload = new EventPayload(ConnectionEvent::SOCKET_AUTH_SUCCESS, $client->jsonSerialize());
             $connection->emit($payload);
 
             return $connection;
         }
 
-        $this->eventDispatcher->dispatch(Events::SOCKET_AUTH_FAILURE, new ConnectionEvent($connection));
+        $this->eventDispatcher->dispatch(ConnectionEvent::SOCKET_AUTH_FAILURE, new ConnectionEvent($connection));
 
         $connection->emit(
             EventPayload::createFromArray(
                 array(
-                    'event' => Events::SOCKET_AUTH_FAILURE,
+                    'event' => ConnectionEvent::SOCKET_AUTH_FAILURE,
                     'data' => 'Invalid access token'
                 )
             )

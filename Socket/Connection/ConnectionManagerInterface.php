@@ -9,7 +9,7 @@
  */
 namespace P2\Bundle\RatchetBundle\Socket\Connection;
 
-use P2\Bundle\RatchetBundle\Exception\UnknownConnectionException;
+use P2\Bundle\RatchetBundle\Socket\Exception\UnknownConnectionException;
 use Ratchet\ConnectionInterface as SocketConnection;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
@@ -37,7 +37,7 @@ interface ConnectionManagerInterface
 
     /**
      * Registers the given socket connection if not managed already.
-     * Fires SOCKET_OPEN event on success.
+     * Fires ConnectionEvent::SOCKET_OPEN event on success.
      *
      * @param SocketConnection $socketConnection
      *
@@ -47,7 +47,7 @@ interface ConnectionManagerInterface
 
     /**
      * Close and remove a managed client connection identified by the given connection.
-     * Fires SOCKET_CLOSE event on success.
+     * Fires ConnectionEvent::SOCKET_CLOSE event on success.
      *
      * @param SocketConnection $socketConnection
      *
@@ -57,8 +57,9 @@ interface ConnectionManagerInterface
 
     /**
      * Authenticates a managed socket connection by the given token. Returns the created client connection on success,
-     * false otherwise. Fires SOCKET_AUTH_SUCCESS event on successful authentication, SOCKET_AUTH_FAILURE on error.
-     * Throws UnknownConnectionException when the given connection is not managed by this connection manager.
+     * false otherwise. Fires ConnectionEvent::SOCKET_AUTH_SUCCESS event on a successful client authentication, or
+     * ConnectionEvent::SOCKET_AUTH_FAILURE on an error. Throws UnknownConnectionException when the given connection
+     * is not managed by this connection manager.
      *
      * @param SocketConnection $socketConnection
      * @param string $accessToken

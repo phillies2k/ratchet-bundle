@@ -7,13 +7,13 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace P2\Bundle\RatchetBundle\Twig;
+namespace P2\Bundle\RatchetBundle\Twig\Extension;
 
 use P2\Bundle\RatchetBundle\Socket\ClientInterface;
 
 /**
  * Class RatchetExtension
- * @package P2\Bundle\RatchetBundle\Twig
+ * @package P2\Bundle\RatchetBundle\Twig\Extension
  */
 class RatchetExtension extends \Twig_Extension
 {
