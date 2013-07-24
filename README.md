@@ -78,12 +78,11 @@ class ConsoleChat implements EventSubscriberInterface
     public function onSendMessage(MessageEvent $event)
     {
         $event->getConnection()->broadcast($event->getPayload());
+
         $event->getConnection()->emit(
-            EventPayload::createFromArray(
-                array(
-                    'event' => ChatEvents::CHAT_MESSAGE_SEND,
-                    'data' => $event->getPayload()->getData()
-                )
+            new EventPayload(
+                ChatEvents::CHAT_MESSAGE_SEND,
+                $event->getPayload()->getData()
             )
         );
     }
