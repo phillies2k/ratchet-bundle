@@ -61,8 +61,12 @@ class P2RatchetExtension extends Extension implements PrependExtensionInterface
         $bundles = $container->getParameter('kernel.bundles');
 
         if (isset($bundles['AsseticBundle'])) {
+
+            $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
+            $loader->load('services.yml');
+
             $scripts = $container->getParameter('p2_ratchet.assetic.websocket_js');
-            $assetPath = $container->getParameter('p2_ratchet.assetic.path');
+            $assetPath = __DIR__ . '/../Resources/assets';
 
             $inputs = array_map(function($value) use ($assetPath) {
                 return $assetPath . '/' . $value;

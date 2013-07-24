@@ -6,11 +6,10 @@ parameters:
     p2_ratchet.connection_manager.class: P2\Bundle\RatchetBundle\Socket\Connection\ConnectionManager
     p2_ratchet.server.class: Ratchet\Server\IoServer
     p2_ratchet.websocket.server.class: Ratchet\WebSocket\WsServer
-    p2_ratchet.twig_extension.class: P2\Bundle\RatchetBundle\Twig\RatchetExtension
+    p2_ratchet.twig_extension.class: P2\Bundle\RatchetBundle\Twig\Extension\RatchetExtension
     p2_ratchet.command.class: P2\Bundle\RatchetBundle\Command\RatchetCommand
 
     # assets
-    p2_ratchet.assetic.path: '@P2RatchetBundle/Resources/assets'
     p2_ratchet.assetic.websocket_js:
         - 'js/websocket.js'
 
