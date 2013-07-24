@@ -82,7 +82,7 @@ class Bridge implements MessageComponentInterface
             sprintf(
                 '<info>#%d</info> %s',
                 $connection->getId(),
-                $connection->getClient()->getAccessToken()
+                $connection->getRemoteAddress()
             )
         );
     }
