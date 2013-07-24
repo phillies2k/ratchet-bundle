@@ -89,54 +89,8 @@ class ConsoleChat implements EventSubscriberInterface
 }
 
 ```
-The javascript chat client may look like this, assuming you are using jquery:
-
-```javascript
-$(function() {
-
-    function getCurrentTimeString()
-    {
-        var date = new Date();
-        var hours = date.getHours();
-        var minutes = date.getMinutes();
-        return (hours < 10 ? '0' + hours : hours) + ':' + (minutes < 10 ? '0' + minutes : minutes);
-    }
-
-    function logMessage(msg, client) {
-        console.log(
-            '%c[%c%s%c] (%c%s%c): %c%s',
-            'font-weight:bold',             // brackets
-            'color: gray',                  // username
-            client.username,
-            'font-weight:bold',             // brackets
-            'color: purple',                // timestamp
-            getCurrentTimeString(),
-            'font-weight:bold',             // brackets
-            '',                             // message
-            msg
-        );
-    }
-
-    var chat = new Ratchet('ws://localhost:8080');
-
-    chat.on('chat.message', function(msg, client) {
-        logMessage(msg, client);
-    });
-
-    chat.on('chat.message.send', function(msg) {
-        logMessage(msg, this.client);
-    });
-
-    $('#send_message').submit(function(e) {
-        chat.emit('chat.send', $(this).find('input[type^=text]').val());
-
-        return false;
-    });
-});
-```
 
 The respective twig template may look like this:
-
 ```html
 <!DOCTYPE html>
 <html>
