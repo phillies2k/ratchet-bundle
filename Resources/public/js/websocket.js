@@ -26,41 +26,26 @@
      * @constructor
      */
     var Ratchet = function(uri) {
-        socket = new WebSocket(uri);
-
         var self = this;
-
-        socket.onmessage = function(e) {
-            try {
-                var data = JSON.parse(e.data);
-                if (data.event && data.data) {
-                    invokeEventHandlers.call(self, data.event, data.data, e);
-                }
-            } catch (e) {
-                if (Ratchet.debug) {
-                    console.error(e);
-                }
-            }
-        };
-
-        socket.onopen = function(e) {
-            invokeEventHandlers.call(self, 'socket.open', null, e);
-            self.emit('socket.auth.request', window.p2_ratchet_access_token);
-        };
-
-        socket.onclose = this.onClose;
-        socket.onerror = this.onError;
+        socket = new WebSocket(uri);
+        socket.onmessage = function(e) { onMessage.call(self, e); };
+        socket.onclose = function(e) { invokeEventHandlers.call(self, 'socket.close', e); };
+        socket.onerror = function(e) { invokeEventHandlers.call(self, 'socket.error', e); };
+        socket.onopen = function(e) { invokeEventHandlers.call(self, 'socket.open', e); };
     };
 
-    Ratchet.debug = false;
-    Ratchet.prototype.authenticated = false;
-
-    Ratchet.prototype.onClose = function() {};
-    Ratchet.prototype.onError = function() {};
-
+    /**
+     * Emits an event to the underlying websocket. Returns true on success, false on error.
+     *
+     * @param {string} event
+     * @param {*} data
+     *
+     * @returns {boolean}
+     */
     Ratchet.prototype.emit = function(event, data) {
         try {
             var encoded = JSON.stringify({ event: event, data: data });
+
             socket.send(encoded);
 
             return true;
@@ -73,7 +58,44 @@
         return false;
     };
 
-    Ratchet.registerEventHandler = function(event, handler) {
+    /**
+     * Handles a websocket message event.
+     *
+     * @param e The websocket event
+     */
+    function onMessage(e) {
+        try {
+            var data = JSON.parse(e.data);
+
+            if (data.event && data.data) {
+                invokeEventHandlers.call(this, data.event, data.data, e);
+            } else if (Ratchet.debug) {
+                console.error(e);
+            }
+        } catch (e) {
+            if (Ratchet.debug) {
+                console.error(e);
+            }
+        }
+    }
+
+    /**
+     * Registers a socket event handler for the given event.
+     *
+     * @param {string} event
+     * @param {function} handler
+     *
+     * @throws Error On invalid input parameters
+     */
+    function registerEventHandler(event, handler) {
+        if (! typeof event == 'string' || ! event.length) {
+            throw new Error('The event name must be a string and must not be empty.');
+        }
+
+        if (! typeof handler == 'function') {
+            throw new Error('An event handler must be a function.');
+        }
+
         var eventHandlers = socketEventHandler[event];
 
         if (! eventHandlers) {
@@ -81,24 +103,44 @@
         }
 
         eventHandlers[eventHandlers.length] = handler;
-    };
+    }
 
-    Ratchet.prototype.on = Ratchet.registerEventHandler;
+    /**
+     * Invoke all registered handlers for the given event.
+     *
+     * @param {string} event
+     */
+    function invokeEventHandlers(event) {
+        var handlers = socketEventHandler[event];
+        if (handlers && handlers.length) {
+            for (var i = 0, len = handlers.length; i < len; i++) {
+                handlers[i].apply(this, Array.prototype.slice.call(arguments, 1));
+            }
+        }
+    }
 
-    Ratchet.registerEventHandler('socket.auth.success', function(client) {
+    // socket.open hook
+    registerEventHandler('socket.open', function(e) {
+        this.emit('socket.auth.request', window['p2_ratchet_access_token']);
+    });
+
+    // socket.auth.success hook
+    registerEventHandler('socket.auth.success', function(client) {
         this.authenticated = true;
         this.client = client;
     });
 
-    window.Ratchet = Ratchet;
+    // expose functionality
+    Ratchet.registerEventHandler = Ratchet.prototype.on = registerEventHandler;
 
-    function invokeEventHandlers(event, data, e) {
-        var handlers = socketEventHandler[event];
-        if (handlers && handlers.length) {
-            for (var i = 0, len = handlers.length; i < len; i++) {
-                handlers[i].call(this, data, event, e);
-            }
-        }
-    }
+    // public members
+    Ratchet.prototype.authenticated = false;
+    Ratchet.prototype.client = null;
+
+    // debug
+    Ratchet.debug = false;
+
+    // expose
+    window.Ratchet = Ratchet;
 
 }).call(window);
