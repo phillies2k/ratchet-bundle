@@ -21,10 +21,10 @@ Version: **1.0.3**
 
 * Implement the [ClientInterface](Socket/ClientInterface.php) in your applications user model or document.
 * Implement the [ClientProviderInterface](Socket/ClientProviderInterface.php) in your applications user provider or managing repository.
-* Set the `provider` setting to the service id of your applications ClientProviderInterface implementation.
-* Implement your custom event subscribers to listen on your own socket events ([Getting started][getting-started]).
+* Set the `provider` setting to the service id of your applications client provider implementation.
+* Implement your custom event subscribers to listen on your own socket events ([Getting started](getting-started)).
 * Use the `{{ p2_ratchet_client }}` tag within your templates to enable the frontend websocket client.
-* Write your client side event handler scripts. See the [Javascript API][javascript-api] section for more detail.
+* Write your client side event handler scripts. See the [Javascript API](javascript-api) section for more detail.
 * Open a terminal and start the server `app/console ratchet:start`
 
 ### Socket Events
@@ -38,7 +38,7 @@ Version: **1.0.3**
 | Event                 | Payload            | Description           |
 | --------------------- | ------------------ | ----------------------|
 | `socket.auth.success` | `{ client }`       | Fired on a successful authentication request. The payload contains the public user data returned by ClientInterface::jsonSerialize() |
-| `socket.auth.failure` | `{ error: "..." }` | Fired when an error occurred during the authentication process. The payload contains the error returned. |
+| `socket.auth.failure` | `{ errors }`       | Fired when an error occurred during the authentication process. The payload contains the errors returned. |
 
 ### Getting started
 
