@@ -9,8 +9,8 @@
  */
 namespace P2\Bundle\RatchetBundle\Socket;
 
-use P2\Bundle\RatchetBundle\Socket\Exception\UnknownClientException;
-use P2\Bundle\RatchetBundle\Socket\Exception\UnknownConnectionException;
+use P2\Bundle\RatchetBundle\Exception\UnknownClientException;
+use P2\Bundle\RatchetBundle\Exception\UnknownConnectionException;
 use Ratchet\ConnectionInterface;
 
 /**
