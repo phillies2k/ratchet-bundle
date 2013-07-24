@@ -65,6 +65,7 @@ This is an example console chat application demonstrating the usage of this bund
 namespace Acme\Bundle\ChatBundle\WebSocket;
 
 use P2\Bundle\RatchetBundle\Event\MessageEvent;
+use P2\Bundle\RatchetBundle\Socket\Payload\EventPayload;
 
 class ConsoleChat implements EventSubscriberInterface
 {
