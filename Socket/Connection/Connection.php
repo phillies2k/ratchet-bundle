@@ -62,7 +62,7 @@ class Connection implements ConnectionInterface
      */
     public function getRemoteAddress()
     {
-        return $this->connection->remoteAddr;
+        return $this->connection->remoteAddress;
     }
 
     /**
