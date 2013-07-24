@@ -95,9 +95,9 @@ class EventPayload implements PayloadInterface
 
     /**
      * @param string $event
-     * @param array $data
+     * @param mixed $data
      */
-    public function __construct($event, array $data = array())
+    public function __construct($event, $data)
     {
         $this->event = $event;
         $this->data = $data;
