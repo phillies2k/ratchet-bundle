@@ -10,12 +10,14 @@ Version: **1.0.3**
         "p2/ratchet-bundle": "dev-master"
     }
 
+
 ### Configuration
 
     p2_ratchet:
         provider: my_provider   # The ClientProviderInterface implementation
         address: 0.0.0.0        # The address to receive sockets on (0.0.0.0 means receive from any)
         port: 8080              # The port the socket server will listen on
+
 
 ### Usage
 
@@ -27,6 +29,14 @@ Version: **1.0.3**
 * Write your client side event handler scripts. See the [Javascript API](#javascript-api) section for more detail.
 * Open a terminal and start the server `app/console ratchet:start`
 
+
+### Events
+
+| Event          | Description                                       |
+|----------------|---------------------------------------------------|
+| SOCKET_OPEN    | Fired when the server received a new connection.  |
+| SOCKET_CLOSE   | Fired when the socket connection was closed.      |
+| SOCKET_ERROR   | Fired when an error occurred during transmission. |
 
 ### Javascript API
 
@@ -57,8 +67,6 @@ socket.on('my.custom.event', function(data) {
 
 
 ### Example
-
-This is an example console chat application demonstrating the usage of this bundle.
 
 ```php
 <?php
