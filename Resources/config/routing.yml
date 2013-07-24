@@ -1,3 +1,0 @@
-p2_ratchet_homepage:
-    pattern:  /hello/{name}
-    defaults: { _controller: P2RatchetBundle:Default:index }

@@ -10,9 +10,9 @@
 namespace P2\Bundle\RatchetBundle\Exception;
 
 /**
- * Class UnknownClientException
+ * Class ClientAuthenticationException
  * @package P2\Bundle\RatchetBundle\Exception
  */
-class UnknownClientException extends \Exception
+class ClientAuthenticationException extends \Exception
 {
 }

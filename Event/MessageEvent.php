@@ -9,46 +9,32 @@
  */
 namespace P2\Bundle\RatchetBundle\Event;
 
-use P2\Bundle\RatchetBundle\Socket\Payload;
-use Ratchet\ConnectionInterface;
-use Symfony\Component\EventDispatcher\Event;
+use P2\Bundle\RatchetBundle\Socket\Connection\ConnectionInterface;
+use P2\Bundle\RatchetBundle\Socket\Payload\EventPayload;
 
 /**
  * Class MessageEvent
  * @package P2\Bundle\RatchetBundle\Event
  */
-class MessageEvent extends Event
+class MessageEvent extends ConnectionEvent
 {
     /**
-     * @var \Ratchet\ConnectionInterface
-     */
-    protected $connection;
-
-    /**
-     * @var \P2\Bundle\RatchetBundle\Socket\Payload
+     * @var EventPayload
      */
     protected $payload;
 
     /**
      * @param ConnectionInterface $connection
-     * @param Payload $payload
+     * @param EventPayload $payload
      */
-    public function __construct(ConnectionInterface $connection, Payload $payload)
+    public function __construct(ConnectionInterface $connection, EventPayload $payload)
     {
         $this->connection = $connection;
         $this->payload = $payload;
     }
 
     /**
-     * @return ConnectionInterface
-     */
-    public function getConnection()
-    {
-        return $this->connection;
-    }
-
-    /**
-     * @return Payload
+     * @return EventPayload
      */
     public function getPayload()
     {

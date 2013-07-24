@@ -2,22 +2,25 @@ parameters:
 
     p2_ratchet.authentication_handler.class: P2\Bundle\RatchetBundle\Security\AuthenticationSuccessHandler
     p2_ratchet.bridge.class: P2\Bundle\RatchetBundle\Socket\Bridge
-    p2_ratchet.connection_manager.class: P2\Bundle\RatchetBundle\Socket\ConnectionManager
+    p2_ratchet.connection_manager.class: P2\Bundle\RatchetBundle\Socket\Connection\ConnectionManager
     p2_ratchet.server.class: Ratchet\Server\IoServer
     p2_ratchet.websocket.server.class: Ratchet\WebSocket\WsServer
-    p2_ratchet.twig_extension.class: P2\Bundle\RatchetBundle\Socket\Twig\ClientExtension
+    p2_ratchet.twig_extension.class: P2\Bundle\RatchetBundle\Twig\RatchetExtension
+    p2_ratchet.assetic.path: @P2RatchetBundle/Resources/assets
+    p2_ratchet.assetic.websocket_js:
+        - js/websocket.js
 
 services:
 
     # socket connection manager
     p2_ratchet.connection_manager:
         class: %p2_ratchet.connection_manager.class%
-        arguments: [ @p2_ratchet.client_provider ]
+        arguments: [ @p2_ratchet.client_provider, @event_dispatcher ]
 
     # socket bridge
     p2_ratchet.bridge:
         class: %p2_ratchet.bridge.class%
-        arguments: [ @p2_ratchet.connection_manager, @event_dispatcher ]
+        arguments: [ @p2_ratchet.connection_manager ]
 
     # websocket server
     p2_ratchet.websocket_server:

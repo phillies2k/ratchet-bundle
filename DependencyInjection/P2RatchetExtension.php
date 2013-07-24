@@ -1,5 +1,12 @@
 <?php
-
+/**
+ * This file is part of the RatchetBundle project.
+ *
+ * (c) 2013 Philipp Boes <mostgreedy@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 namespace P2\Bundle\RatchetBundle\DependencyInjection;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -54,12 +61,19 @@ class P2RatchetExtension extends Extension implements PrependExtensionInterface
         $bundles = $container->getParameter('kernel.bundles');
 
         if (isset($bundles['AsseticBundle'])) {
+            $scripts = $container->getParameter('p2_ratchet.assetic.websocket_js');
+            $assetPath = $container->getParameter('p2_ratchet.assetic.path');
+
+            $inputs = array_map(function($value) use ($assetPath) {
+                return $assetPath . '/' . $value;
+            }, $scripts);
+
             $container->prependExtensionConfig(
                 'assetic',
                 array(
                     'assets' => array(
                         'p2_ratchet_js' => array(
-                            'inputs' => array('@P2RatchetBundle/Resources/public/js/websocket.js'),
+                            'inputs' => $inputs,
                             'output' => 'js/websocket.js'
                         )
                     )

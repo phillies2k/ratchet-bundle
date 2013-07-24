@@ -12,10 +12,10 @@ namespace P2\Bundle\RatchetBundle\Twig;
 use P2\Bundle\RatchetBundle\Socket\ClientInterface;
 
 /**
- * Class ClientExtension
+ * Class RatchetExtension
  * @package P2\Bundle\RatchetBundle\Twig
  */
-class ClientExtension extends \Twig_Extension
+class RatchetExtension extends \Twig_Extension
 {
     /**
      * @var string

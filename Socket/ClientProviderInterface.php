@@ -9,8 +9,6 @@
  */
 namespace P2\Bundle\RatchetBundle\Socket;
 
-use Doctrine\Common\Persistence\ObjectManager;
-
 /**
  * Interface ClientProviderInterface
  * @package P2\Bundle\RatchetBundle\Socket
@@ -27,9 +25,10 @@ interface ClientProviderInterface
     public function findByAccessToken($accessToken);
 
     /**
-     * Returns the object manager this client provider uses to persist changes made to the client.
+     * Updates the given client in the data layer.
      *
-     * @return ObjectManager
+     * @param ClientInterface $client
+     * @return void
      */
-    public function getManager();
+    public function updateClient(ClientInterface $client);
 }

@@ -42,10 +42,10 @@ class AuthenticationSuccessHandler
 
         /** @var ClientInterface $user */
         if ($user instanceof ClientInterface) {
-            $user->setAccessToken(hash('sha256', uniqid(microtime(true))));
+            $accessToken = hash('sha256', uniqid(microtime(true)));
+            $user->setAccessToken($accessToken);
 
-            $this->clientProvider->getManager()->persist($user);
-            $this->clientProvider->getManager()->flush();
+            $this->clientProvider->updateClient($user);
         }
     }
 }

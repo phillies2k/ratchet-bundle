@@ -9,8 +9,7 @@
  */
 namespace P2\Bundle\RatchetBundle\Event;
 
-use P2\Bundle\RatchetBundle\Socket\ClientInterface;
-use Ratchet\ConnectionInterface;
+use P2\Bundle\RatchetBundle\Socket\Connection\ConnectionInterface;
 use Symfony\Component\EventDispatcher\Event;
 
 /**
@@ -20,38 +19,23 @@ use Symfony\Component\EventDispatcher\Event;
 class ConnectionEvent extends Event
 {
     /**
-     * @var \Ratchet\ConnectionInterface
+     * @var ConnectionInterface
      */
     protected $connection;
 
     /**
-     * @var \P2\Bundle\RatchetBundle\Socket\ClientInterface
-     */
-    protected $client;
-
-    /**
      * @param ConnectionInterface $connection
-     * @param ClientInterface $client
      */
-    public function __construct(ConnectionInterface $connection, ClientInterface $client = null)
+    function __construct(ConnectionInterface $connection)
     {
         $this->connection = $connection;
-        $this->client = $client;
     }
 
     /**
-     * @return \Ratchet\ConnectionInterface
+     * @return ConnectionInterface
      */
     public function getConnection()
     {
         return $this->connection;
-    }
-
-    /**
-     * @return \P2\Bundle\RatchetBundle\Socket\ClientInterface
-     */
-    public function getClient()
-    {
-        return $this->client;
     }
 }

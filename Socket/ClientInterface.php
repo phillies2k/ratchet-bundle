@@ -18,10 +18,10 @@ interface ClientInterface
     /**
      * Sets the websocket access token for this client
      *
-     * @param string $token
+     * @param string $accessToken
      * @return ClientInterface
      */
-    public function setAccessToken($token);
+    public function setAccessToken($accessToken);
 
     /**
      * Returns the websocket access token for this client if any, or null.
@@ -31,7 +31,7 @@ interface ClientInterface
     public function getAccessToken();
 
     /**
-     * Returns the array of public client data which will be transferred to the websocket frontend client on successful
+     * Returns the array of public client data which will be transferred to the websocket client on successful
      * authentication. The websocket access token for this client should always be returned.
      *
      * @return array

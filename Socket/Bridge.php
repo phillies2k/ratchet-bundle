@@ -9,15 +9,14 @@
  */
 namespace P2\Bundle\RatchetBundle\Socket;
 
-use P2\Bundle\RatchetBundle\Event\CloseEvent;
-use P2\Bundle\RatchetBundle\Event\ConnectionEvent;
-use P2\Bundle\RatchetBundle\Event\ErrorEvent;
 use P2\Bundle\RatchetBundle\Event\MessageEvent;
+use P2\Bundle\RatchetBundle\Exception\ClientAuthenticationException;
+use P2\Bundle\RatchetBundle\Exception\UnknownConnectionException;
+use P2\Bundle\RatchetBundle\Socket\Connection\ConnectionManagerInterface;
+use P2\Bundle\RatchetBundle\Socket\Payload\EventPayload;
 use Ratchet\ConnectionInterface;
 use Ratchet\MessageComponentInterface;
 use Symfony\Component\Console\Output\ConsoleOutput;
-use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\EventDispatcher\EventDispatcher;
 
 /**
  * Class Bridge
@@ -36,143 +35,118 @@ class Bridge implements MessageComponentInterface
     const PORT = 8080;
 
     /**
-     * @var string
-     */
-    const SOCKET_CLOSE = 'socket.close';
-
-    /**
-     * @var string
-     */
-    const SOCKET_DATA = 'socket.data';
-
-    /**
-     * @var string
-     */
-    const SOCKET_ERROR = 'socket.error';
-
-    /**
-     * @var string
-     */
-    const SOCKET_OPEN = 'socket.open';
-
-    /**
-     * @var string
-     */
-    const SOCKET_AUTH_REQUEST = 'socket.auth.request';
-
-    /**
-     * @var string
-     */
-    const SOCKET_AUTH_SUCCESS = 'socket.auth.success';
-
-    /**
      * @var ConnectionManagerInterface
      */
     protected $connectionManager;
 
     /**
-     * @var EventDispatcher
-     */
-    protected $eventDispatcher;
-
-    /**
-     * @var OutputInterface
+     * @var ConsoleOutput
      */
     protected $output;
 
     /**
      * @param ConnectionManagerInterface $connectionManager
-     * @param EventDispatcher $eventDispatcher
      */
-    public function __construct(ConnectionManagerInterface $connectionManager, EventDispatcher $eventDispatcher)
+    public function __construct(ConnectionManagerInterface $connectionManager)
     {
         $this->connectionManager = $connectionManager;
-        $this->eventDispatcher = $eventDispatcher;
         $this->output = new ConsoleOutput();
     }
 
     /**
-     * When a new connection is opened it will be passed to this method
-     *
-     * @param  ConnectionInterface $conn The socket/connection that just connected to your application
-     *
-     * @throws \Exception
+     * @param ConnectionInterface $conn
      */
     public function onOpen(ConnectionInterface $conn)
     {
-        $payload = new Payload(static::SOCKET_OPEN, 'require_authentication');
-        $conn->send($payload->encode());
-
-        $this->eventDispatcher->dispatch(static::SOCKET_OPEN, new ConnectionEvent($conn));
-        $this->log('NEW', sprintf('<info>#%s</info>', $conn->resourceId));
+        $this->connectionManager->addConnection($conn);
+        $this->log('NEW', sprintf('<info>#%d</info>', $conn->resourceId));
     }
 
     /**
-     * This is called before or after a socket is closed (depends on how it's closed).  SendMessage to $conn will not
-     * result in an error if it has already been closed.
-     *
-     * @param  ConnectionInterface $conn The socket/connection that is closing/closed
-     *
-     * @throws \Exception
+     * @param ConnectionInterface $conn
+     * @throws \RuntimeException
      */
     public function onClose(ConnectionInterface $conn)
     {
-        if (null !== $client = $this->connectionManager->getClientForConnection($conn)) {
-            $this->connectionManager->removeConnection($conn);
+        if (null === $connection = $this->connectionManager->getConnection($conn)) {
             $conn->close();
 
-            $this->eventDispatcher->dispatch(static::SOCKET_CLOSE, new CloseEvent($conn, $client));
-            $this->log('CLOSE', sprintf('<info>#%d</info> %s', $conn->resourceId, $client->getAccessToken()));
+            throw new \RuntimeException('Unknown connection');
         }
+
+        $this->connectionManager->closeConnection($conn);
+
+        $this->log(
+            'CLOSE',
+            sprintf(
+                '<info>#%d</info> %s',
+                $connection->getId(),
+                $connection->getClient()->getAccessToken()
+            )
+        );
     }
 
     /**
-     * If there is an error with one of the sockets, or somewhere in the application where an Exception is thrown, the
-     * Exception is sent back down the stack, handled by the Server and bubbled back up the application through this
-     * method.
-     *
-     * @param  ConnectionInterface $conn
-     * @param  \Exception $e
-     *
-     * @throws \Exception
+     * @param ConnectionInterface $conn
+     * @param \Exception $e
      */
     public function onError(ConnectionInterface $conn, \Exception $e)
     {
-        $this->eventDispatcher->dispatch(static::SOCKET_ERROR, new ErrorEvent($conn, $e));
         $this->log('ERROR', $e->getMessage());
     }
 
     /**
-     * Triggered when a client sends data through the socket.
-     *
-     * @param  \Ratchet\ConnectionInterface $from The socket/connection that sent the message to your application
-     * @param  string $msg  The message received
-     *
+     * @param ConnectionInterface $from
+     * @param string $msg
      * @throws \Exception
      */
     public function onMessage(ConnectionInterface $from, $msg)
     {
         try {
-            $payload = Payload::createFromJson($msg);
+            $payload = EventPayload::createFromJson($msg);
 
             switch ($payload->getEvent()) {
-                case static::SOCKET_AUTH_REQUEST:
-                    $client = $this->connectionManager->attachClient($from, $payload->getData());
+                case Events::SOCKET_AUTH_REQUEST:
+                    if (false === $connection = $this->connectionManager->authenticate($from, $payload->getData())) {
+                        throw new ClientAuthenticationException(
+                            sprintf(
+                                'Could not find client #%s',
+                                $payload->getData()
+                            )
+                        );
+                    }
 
-                    $response = new Payload(static::SOCKET_AUTH_SUCCESS, $client->jsonSerialize());
-
-                    $from->send($response->encode());
-
-                    $this->eventDispatcher->dispatch(static::SOCKET_AUTH_SUCCESS, new ConnectionEvent($from, $client));
-
-                    $this->log('EVT', sprintf('<info>%s</info> %s', $payload->getEvent(), $payload->getData()));
-                    $this->log('MSG', sprintf('<info>%s</info> %s', $from->resourceId, $response->encode()));
+                    $this->log(
+                        'MSG',
+                        sprintf(
+                            '<info>%s (#%s)</info> %s - %s',
+                            $connection->getRemoteAddress(),
+                            $connection->getId(),
+                            Events::SOCKET_AUTH_SUCCESS,
+                            $connection->getClient()->jsonSerialize()
+                        )
+                    );
 
                     break;
                 default:
-                    $this->eventDispatcher->dispatch($payload->getEvent(), new MessageEvent($from, $payload));
+                    $this->connectionManager
+                        ->getEventDispatcher()
+                        ->dispatch(
+                            $payload->getEvent(),
+                            new MessageEvent(
+                                $this->connectionManager->getConnection($from),
+                                $payload
+                            )
+                        );
+
+                    $this->log('EVT', sprintf('<info>%s</info> - %s', $payload->getEvent(), $payload->encode()));
             }
+        } catch (ClientAuthenticationException $e) {
+            $this->log('ERR', $e->getMessage());
+        } catch (UnknownConnectionException $e) {
+            $this->log('ERR', $e->getMessage());
         } catch (\Exception $e) {
+            throw $e;
         }
     }
 
