@@ -1,7 +1,7 @@
 P2RatchetBundle
 ===============
 
-Version: **1.0.3**
+Version: **1.0.4**
 
 
 ### Installation
@@ -18,13 +18,18 @@ Version: **1.0.3**
         address: 0.0.0.0        # The address to receive sockets on (0.0.0.0 means receive from any)
         port: 8080              # The port the socket server will listen on
 
+### Command Line Tool
+
+```bash
+php app/console ratchet:start [port] [address]
+```
 
 ### Usage
 
 * Implement the [ClientInterface](Socket/ClientInterface.php) in your applications user model or document.
 * Implement the [ClientProviderInterface](Socket/ClientProviderInterface.php) in your applications user provider or managing repository.
 * Set the `provider` setting to the service id of your applications client provider implementation.
-* Implement your custom event subscribers to listen on your own socket events ([Getting started](#getting-started)).
+* Implement the [ApplicationInterface](Socket/ApplicationInterface) to listen on your own socket events ([Getting started](#getting-started)).
 * Use the `{{ p2_ratchet_client(debug, user) }}` twig function within your templates to enable the frontend websocket client.
 * Write your client side event handler scripts. See the [Javascript API](#javascript-api) section for more detail.
 * Open a terminal and start the server `app/console ratchet:start`
@@ -32,11 +37,13 @@ Version: **1.0.3**
 
 ### Events
 
-| Event          | Description                                       |
-|----------------|---------------------------------------------------|
-| SOCKET_OPEN    | Fired when the server received a new connection.  |
-| SOCKET_CLOSE   | Fired when the socket connection was closed.      |
-| SOCKET_ERROR   | Fired when an error occurred during transmission. |
+| Event          | Description                                          |
+|----------------|----------------------------------------------------- |
+| SOCKET_OPEN    | Fired when the server received a new connection.     |
+| SOCKET_CLOSE   | Fired when the socket connection was closed.         |
+| SOCKET_ERROR   | Fired when an error occurred during transmission.    |
+| SOCKET_MESSAGE | Fired when a message was send through a connection.  |
+
 
 ### Javascript API
 
@@ -57,7 +64,7 @@ socket.on('my.custom.event', function(data) {
 ##### Client:
 | Event                 | Payload            | Description           |
 | --------------------- | ------------------ | ----------------------|
-| `socket.auth.request` | `{ token }`        | This event is dispatched by the javascript client directly after the socket.open event occurred at the client socket |
+| `socket.auth.request` | `{ token }`        | This event is dispatched by the javascript client directly after the socket connection was opened. Its attempt is to send the value of `p2_ratchet_access_token` to the server to identify the websocket client within your application. |
 
 ##### Server:
 | Event                 | Payload            | Description           |
@@ -67,10 +74,34 @@ socket.on('my.custom.event', function(data) {
 
 
 ### Getting started
+The [ApplicationInterface](Socket/ApplicationInterface) acts only as an alias for symfony`s EventSubscriberInterface. Its used to detect websocket event subscribers explicitly.
+
+Write your application as you would write a common event subscriber. The event handler methods will receive exactly one argument: a [MessageEvent](Socket/Event/MessageEvent) instance, containing information about the socket connection and the payload (see [ConnectionInterface](Socket/Connection/ConnectionInterface) and [EventPayload](Socket/Payload/EventPayload) for more details).
+
+```php
+<?php
+
+namespace Acme\Bundle\ChatBundle\WebSocket;
+
+use P2\Bundle\RatchetBundle\Socket\ApplicationInterface;
+
+class ConsoleChat implements ApplicationInterface
+{
+    public static function getSubscribedEvents()
+    {
+        return array(
+            'acme.websocket.some.event' => 'onSomeEvent'
+            // ...
+        );
+    }
+
+    // put your event handler code here ...
+}
+
+```
 
 
-
-### Example
+### Simple console chat application example
 
 ```php
 <?php
@@ -118,7 +149,7 @@ The respective twig template may look like this:
         <input type="text" name="message">
         <button type="submit" name="send">send</button>
     </form>
-    {{ p2_ratchet_client }}
+    {{ p2_ratchet_client(app.debug, app.user) }}
 </body>
 </html>
 ```

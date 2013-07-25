@@ -21,13 +21,25 @@ use Symfony\Component\Console\Output\OutputInterface;
 class RatchetCommand extends ContainerAwareCommand
 {
     /**
+     * @var string
+     */
+    const ARG_ADDRESS = 'address';
+
+    /**
+     * @var string
+     */
+    const ARG_PORT = 'port';
+
+    /**
      * {@inheritDoc}
      */
     protected function configure()
     {
         $this
+            ->addArgument(static::ARG_PORT, InputArgument::OPTIONAL, 'The port to listen on incoming connections')
+            ->addArgument(static::ARG_ADDRESS, InputArgument::OPTIONAL, 'The address to listen on')
             ->setDescription('Starts a web socket server')
-            ->setHelp('ratchet:start')
+            ->setHelp('ratchet:start [port] [address]')
             ->setName('ratchet:start');
     }
 
@@ -44,7 +56,21 @@ class RatchetCommand extends ContainerAwareCommand
             /** @var \P2\Bundle\RatchetBundle\Socket\Server $server */
             $server = $this->getContainer()->get('p2_ratchet.socket.server');
 
-            $output->writeln('<info>server starting</info>');
+            if ($input->hasArgument(static::ARG_ADDRESS)) {
+                $server->setAddress($input->getArgument(static::ARG_ADDRESS));
+            }
+
+            if ($input->hasArgument(static::ARG_PORT)) {
+                $server->setPort($input->getArgument(static::ARG_PORT));
+            }
+
+            $output->writeln(
+                sprintf(
+                    '<info>starting websocket server %s:%s</info>',
+                    $server->getAddress(),
+                    $server->getPort()
+                )
+            );
 
             $server->run();
 

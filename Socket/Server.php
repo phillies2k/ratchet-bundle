@@ -44,11 +44,6 @@ class Server
     protected $bridge;
 
     /**
-     * @var IoServer
-     */
-    protected $server;
-
-    /**
      * @param Bridge $bridge
      * @param int $port
      * @param string $address
@@ -62,15 +57,53 @@ class Server
 
     public function run()
     {
-        if ($this->server === null) {
-            $this->server = IoServer::factory(
-                new WsServer($this->bridge),
-                $this->port,
-                $this->address
-            );
-        }
+        $server = IoServer::factory(
+            new WsServer($this->bridge),
+            $this->getPort(),
+            $this->getAddress()
+        );
 
-        $this->server->run();
+        $server->run();
+    }
+
+    /**
+     * @param string $address
+     *
+     * @return Server
+     */
+    public function setAddress($address)
+    {
+        $this->address = $address;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAddress()
+    {
+        return $this->address;
+    }
+
+    /**
+     * @param int $port
+     *
+     * @return Server
+     */
+    public function setPort($port)
+    {
+        $this->port = $port;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPort()
+    {
+        return $this->port;
     }
 }
 
