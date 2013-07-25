@@ -18,11 +18,6 @@ Version: **1.0.5**
         address: 0.0.0.0        # The address to receive sockets on (0.0.0.0 means receive from any)
         port: 8080              # The port the socket server will listen on
 
-### Command Line Tool
-
-```bash
-php app/console ratchet:start [port] [address]
-```
 
 ### Usage
 
@@ -32,31 +27,7 @@ php app/console ratchet:start [port] [address]
 * Implement the [ApplicationInterface](Socket/ApplicationInterface) to listen on your own socket events ([Getting started](#getting-started)).
 * Use the `{{ p2_ratchet_client(debug, user) }}` twig function within your templates to enable the frontend websocket client.
 * Write your client side event handler scripts. See the [Javascript API](#javascript-api) section for more detail.
-* Open a terminal and start the server `app/console ratchet:start`
-
-
-### Events
-
-| Event          | Description                                          |
-|----------------|----------------------------------------------------- |
-| SOCKET_OPEN    | Fired when the server received a new connection.     |
-| SOCKET_CLOSE   | Fired when the socket connection was closed.         |
-| SOCKET_ERROR   | Fired when an error occurred during transmission.    |
-| SOCKET_MESSAGE | Fired when a message was send through a connection.  |
-
-
-#### WebSocket Events
-
-##### Client:
-| Event                 | Payload            | Description           |
-| --------------------- | ------------------ | ----------------------|
-| `socket.auth.request` | `{ token }`        | This event is dispatched by the javascript client directly after the socket connection was opened. Its attempt is to send the value of `p2_ratchet_access_token` to the server to identify the websocket client within your application. |
-
-##### Server:
-| Event                 | Payload            | Description           |
-| --------------------- | ------------------ | ----------------------|
-| `socket.auth.success` | `{ client }`       | Fired on a successful authentication request. The payload contains the public user data returned by ClientInterface::jsonSerialize() |
-| `socket.auth.failure` | `{ errors }`       | Fired when an error occurred during the authentication process. The payload contains the errors returned. |
+* Open a terminal and start the server `app/console socket:server:start`. By default it will accept connection from *:8080 (see [Command Line Tool](#command-line-tool))
 
 
 ### Getting started
@@ -105,6 +76,37 @@ services:
             - { name: kernel.event_subscriber }
             - { name: p2_ratchet.application }
 ```
+
+
+### Command Line Tool
+
+```bash
+php app/console socket:server:start [port] [address]
+```
+
+
+### Events
+
+| Event          | Description                                          |
+|----------------|----------------------------------------------------- |
+| SOCKET_OPEN    | Fired when the server received a new connection.     |
+| SOCKET_CLOSE   | Fired when the socket connection was closed.         |
+| SOCKET_ERROR   | Fired when an error occurred during transmission.    |
+| SOCKET_MESSAGE | Fired when a message was send through a connection.  |
+
+
+#### WebSocket Events
+
+##### Client:
+| Event                 | Payload            | Description           |
+| --------------------- | ------------------ | ----------------------|
+| `socket.auth.request` | `{ token }`        | This event is dispatched by the javascript client directly after the socket connection was opened. Its attempt is to send the value of `p2_ratchet_access_token` to the server to identify the websocket client within your application. |
+
+##### Server:
+| Event                 | Payload            | Description           |
+| --------------------- | ------------------ | ----------------------|
+| `socket.auth.success` | `{ client }`       | Fired on a successful authentication request. The payload contains the public user data returned by ClientInterface::jsonSerialize() |
+| `socket.auth.failure` | `{ errors }`       | Fired when an error occurred during the authentication process. The payload contains the errors returned. |
 
 
 ### Javascript API

@@ -15,10 +15,10 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Class RatchetCommand
+ * Class SocketServerCommand
  * @package P2\Bundle\WebsocketBundle\Command
  */
-class RatchetCommand extends ContainerAwareCommand
+class SocketServerCommand extends ContainerAwareCommand
 {
     /**
      * @var string
@@ -39,8 +39,8 @@ class RatchetCommand extends ContainerAwareCommand
             ->addArgument(static::ARG_PORT, InputArgument::OPTIONAL, 'The port to listen on incoming connections')
             ->addArgument(static::ARG_ADDRESS, InputArgument::OPTIONAL, 'The address to listen on')
             ->setDescription('Starts a web socket server')
-            ->setHelp('ratchet:start [port] [address]')
-            ->setName('ratchet:start');
+            ->setHelp('socket:server:start [port] [address]')
+            ->setName('socket:server:start');
     }
 
     /**
