@@ -169,7 +169,10 @@ The respective twig template may look like this:
 
             function appendChatMessage(response) {
                 $('#chat_frame').append(
-                    $('<p>[<em>%s</em>]: <span>%s</span></p>'.replace(/%s/g,[ response.client.username, response.message ]))
+                    $('<p>[<em>%s</em>]: <span>%s</span></p>'.replace(
+                        /%s/g,
+                        [ response.client.username, response.message ]
+                    ))
                 );
             }
 
