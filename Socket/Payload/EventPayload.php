@@ -95,7 +95,7 @@ class EventPayload implements PayloadInterface
             return new static($data['event'], $data['data']);
         }
 
-        return false;
+        return null;
     }
 
     /**

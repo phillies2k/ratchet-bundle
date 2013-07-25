@@ -9,6 +9,9 @@ parameters:
     p2_ratchet.twig_extension.class: P2\Bundle\RatchetBundle\Twig\Extension\RatchetExtension
     p2_ratchet.command.class: P2\Bundle\RatchetBundle\Command\RatchetCommand
 
+    # interfaces
+    p2_ratchet.application.interface: P2\Bundle\RatchetBundle\Socket\ApplicationInterface
+
     # assets
     p2_ratchet.assetic.websocket_js:
         - 'js/websocket.js'

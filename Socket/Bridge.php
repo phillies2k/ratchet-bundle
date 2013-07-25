@@ -41,6 +41,11 @@ class Bridge implements MessageComponentInterface
     protected $connectionManager;
 
     /**
+     * @var array
+     */
+    protected $allowedEvents = array();
+
+    /**
      * @var ConsoleOutput
      */
     protected $output;
@@ -51,6 +56,7 @@ class Bridge implements MessageComponentInterface
     public function __construct(ConnectionManagerInterface $connectionManager)
     {
         $this->connectionManager = $connectionManager;
+        $this->allowedEvents = array(ConnectionEvent::SOCKET_AUTH_REQUEST);
         $this->output = new ConsoleOutput();
     }
 
@@ -104,7 +110,11 @@ class Bridge implements MessageComponentInterface
     public function onMessage(ConnectionInterface $from, $msg)
     {
         try {
-            $payload = EventPayload::createFromJson($msg);
+            if (null === $payload = EventPayload::createFromJson($msg)) {
+                $this->log('INFO', sprintf('Invalid request: %s', $msg));
+
+                return;
+            }
 
             switch ($payload->getEvent()) {
                 case ConnectionEvent::SOCKET_AUTH_REQUEST:
@@ -130,6 +140,33 @@ class Bridge implements MessageComponentInterface
 
                     break;
                 default:
+
+                    /**
+                     * Event handling
+                     *
+                     * Need to handle list of accepted events (events that event subscribers for socket events subscribe
+                     * on) somehow.
+                     *
+                     * Create SocketApplicationInterface that extends the EventSubscriberInterface to be implemented
+                     * from custom socket applications, e.g: "class MyChat implements SocketApplicationInterface {}"
+                     *
+                     * Add a di compiler pass to hook into tagged socket applications ("p2_ratchet.socket.application"),
+                     * adding this list to the bridge service definition on extension loading.
+                     *
+                     * Also ensure all socket application service definitions are tagged as "kernel.event_subscriber"
+                     *
+                     * Fix Events in general: Remove the SOCKET_AUTH_SUCCESS and SOCKET_AUTH_FAILURE events from
+                     * ConnectionEvent and add them to MessageEvent, cause they are only dispatched to the client.
+                     *
+                     *
+                     */
+
+                    if (! in_array($payload->getEvent(), $this->allowedEvents)) {
+                        $this->log('INFO', sprintf('Unregistered event: %s', $payload->getEvent()));
+
+                        return;
+                    }
+
                     $this->connectionManager
                         ->getEventDispatcher()
                         ->dispatch(
@@ -149,6 +186,18 @@ class Bridge implements MessageComponentInterface
         } catch (\Exception $e) {
             throw $e;
         }
+    }
+
+    /**
+     * @param array $allowedEvents
+     *
+     * @return Bridge
+     */
+    public function setAllowedEvents(array $allowedEvents)
+    {
+        $this->allowedEvents = array_unique(array_merge($this->allowedEvents, $allowedEvents));
+
+        return $this;
     }
 
     /**

@@ -25,7 +25,7 @@ Version: **1.0.3**
 * Implement the [ClientProviderInterface](Socket/ClientProviderInterface.php) in your applications user provider or managing repository.
 * Set the `provider` setting to the service id of your applications client provider implementation.
 * Implement your custom event subscribers to listen on your own socket events ([Getting started](#getting-started)).
-* Use the `{{ p2_ratchet_client }}` tag within your templates to enable the frontend websocket client.
+* Use the `{{ p2_ratchet_client(debug, user) }}` twig function within your templates to enable the frontend websocket client.
 * Write your client side event handler scripts. See the [Javascript API](#javascript-api) section for more detail.
 * Open a terminal and start the server `app/console ratchet:start`
 
