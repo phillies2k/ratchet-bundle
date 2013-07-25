@@ -129,7 +129,7 @@ socket.emit('some.event', {
 ```
 
 
-### Simple console chat application example
+### Simple chat application example
 
 The application code:
 ```php
@@ -181,17 +181,44 @@ class ChatApplication implements ApplicationInterface
 ```
 
 The respective twig template may look like this:
+
 ```html
 # src/Acme/Bundle/ChatBundle/Resources/views/chat.html.twig
 {% extends '::base.html.twig' %}
 
+{% block stylesheets %}
+
+    <style type="text/css">
+        #chat { width: 760px; margin: 0 auto; }
+        #chat_frame { overflow: hidden; position: relative; height: 320px; line-height: 16px; font-size: 12px; font-family: monospace; border: 1px solid #a7a7a7; margin-bottom: 10px; border-radius: 10px; }
+        #chat_buffer { line-height: 16px; font-size: 12px; font-family: monospace; min-height: 300px; position: absolute; bottom: 0; left: 0; padding: 10px 20px; width: 720px; }
+        #chat_buffer > p { margin: 0; padding: 0; font-size: inherit; line-height: inherit; color: dimgray; }
+        #chat_buffer > p > em { font-weight: bold; color: deepskyblue; }
+        #chat_buffer > p > span { color: dimgray; }
+        #send_message { background: #f5f5f5; border: 1px solid darkgray; border-radius: 10px; padding: 20px; }
+        #message { padding: 8px 5px; border: 1px solid darkgray; font-size: 14px; line-height: 16px; width: 100%; box-sizing: border-box; }
+    </style>
+
+{% endblock %}
+
 {% block body %}
 
-    <div id="chat_frame"></div>
-    <form id="send_message" method="post" action="">
-        <input type="text" id="message" name="message">
-        <button type="submit" name="send">send</button>
-    </form>
+    <section id="chat">
+        <div id="chat_frame">
+            <div id="chat_buffer"></div>
+        </div>
+
+        <form id="send_message" method="post" action="">
+            <input type="text" id="message" name="message" placeholder="...">
+        </form>
+
+    </section>
+
+{% endblock %}
+
+{% block javascripts %}
+
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 
     {{ p2_ratchet_client(app.debug, app.user) }}
 
@@ -199,11 +226,8 @@ The respective twig template may look like this:
         $(function() {
 
             function appendChatMessage(response) {
-                $('#chat_frame').append(
-                    $('<p>[<em>%s</em>]: <span>%s</span></p>'.replace(
-                        /%s/g,
-                        [ response.client.username, response.message ]
-                    ))
+                $('#chat_buffer').append(
+                        $('<p>[<em>' + response.client.username + '</em>]: <span>' + response.message + '</span></p>')
                 );
             }
 
@@ -216,11 +240,12 @@ The respective twig template may look like this:
             $('#send_message').submit(function(e) {
                 e.preventDefault();
 
-                var message = $('#message').val();
+                var message = $('#message');
+                var value = message.val();
 
-                if (message.length) {
-                    server.emit('chat.send', $('#message').val());
-                    $('#message').val("");
+                if (value.length) {
+                    server.emit('chat.send', value);
+                    message.val("");
                 }
 
                 return false;
@@ -229,5 +254,6 @@ The respective twig template may look like this:
     </script>
 
 {% endblock %}
+
 
 ```

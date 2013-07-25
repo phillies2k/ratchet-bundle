@@ -61,7 +61,13 @@ class ConnectionManager implements ConnectionManagerInterface
      */
     public function getConnections()
     {
-        return (array) $this->connections;
+        $connections = array();
+
+        foreach ($this->connections as $connection) {
+            $connections[] = $this->connections->offsetGet($connection);
+        }
+
+        return $connections;
     }
 
     /**
