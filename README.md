@@ -66,6 +66,10 @@ socket.on('my.custom.event', function(data) {
 | `socket.auth.failure` | `{ errors }`       | Fired when an error occurred during the authentication process. The payload contains the errors returned. |
 
 
+### Getting started
+
+
+
 ### Example
 
 ```php
@@ -74,14 +78,15 @@ socket.on('my.custom.event', function(data) {
 namespace Acme\Bundle\ChatBundle\WebSocket;
 
 use P2\Bundle\RatchetBundle\Event\MessageEvent;
+use P2\Bundle\RatchetBundle\Socket\ApplicationInterface;
 use P2\Bundle\RatchetBundle\Socket\Payload\EventPayload;
 
-class ConsoleChat implements EventSubscriberInterface
+class ConsoleChat implements ApplicationInterface
 {
     public static function getSubscribedEvents()
     {
         return array(
-            ChatEvents::CHAT_SEND => 'onSendMessage'
+            'chat.send' => 'onSendMessage'
         );
     }
 
@@ -91,7 +96,7 @@ class ConsoleChat implements EventSubscriberInterface
 
         $event->getConnection()->emit(
             new EventPayload(
-                ChatEvents::CHAT_MESSAGE_SEND,
+                'chat.message.send',
                 $event->getPayload()->getData()
             )
         );

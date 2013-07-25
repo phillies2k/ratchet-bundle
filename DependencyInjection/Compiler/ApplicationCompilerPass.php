@@ -38,7 +38,8 @@ class ApplicationCompilerPass implements CompilerPassInterface
             }
 
             $interface = $container->getParameter('p2_ratchet.application.interface');
-            $reflection = new \ReflectionClass($service->getClass());
+            $classname = $container->getParameter(trim($service->getClass(), '%'));
+            $reflection = new \ReflectionClass($classname);
 
             if (! $reflection->implementsInterface($interface)) {
 
@@ -50,15 +51,12 @@ class ApplicationCompilerPass implements CompilerPassInterface
                     ));
             }
 
-            /** @var ApplicationInterface $classname */
-            $classname = $service->getClass();
-
             $eventList = array_keys($classname::getSubscribedEvents());
             $events = array_merge($events, $eventList);
         }
 
         $container
             ->getDefinition('p2_ratchet.bridge')
-            ->addMethodCall('setAllowedEvents', $events);
+            ->addMethodCall('setAllowedEvents', array($events));
     }
 }

@@ -9,8 +9,16 @@
  */
 namespace P2\Bundle\RatchetBundle;
 
+use P2\Bundle\RatchetBundle\DependencyInjection\Compiler\ApplicationCompilerPass;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 class P2RatchetBundle extends Bundle
 {
+    public function build(ContainerBuilder $container)
+    {
+        parent::build($container);
+
+        $container->addCompilerPass(new ApplicationCompilerPass());
+    }
 }
