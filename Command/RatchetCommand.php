@@ -56,23 +56,25 @@ class RatchetCommand extends ContainerAwareCommand
             /** @var \P2\Bundle\RatchetBundle\Socket\Server $server */
             $server = $this->getContainer()->get('p2_ratchet.socket.server');
 
-            if ($input->hasArgument(static::ARG_ADDRESS)) {
-                $server->setAddress($input->getArgument(static::ARG_ADDRESS));
+            if (null !== $address = $input->getArgument(static::ARG_ADDRESS)) {
+                $server->setAddress($address);
             }
 
-            if ($input->hasArgument(static::ARG_PORT)) {
-                $server->setPort($input->getArgument(static::ARG_PORT));
+            if (null !== $port = $input->getArgument(static::ARG_PORT)) {
+                $server->setPort($port);
             }
 
             $output->writeln(
                 sprintf(
-                    '<info>starting websocket server %s:%s</info>',
+                    '<info><comment>Ratchet</comment> - listening on connections from %s:%s</info>',
                     $server->getAddress(),
                     $server->getPort()
                 )
             );
 
-            $server->run();
+            $server
+                ->create()
+                ->run();
 
             return 0;
         } catch (\Exception $e) {

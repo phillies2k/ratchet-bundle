@@ -26,7 +26,7 @@ class Server
     /**
      * @var int
      */
-    const PORT = 80;
+    const PORT = 8080;
 
     /**
      * @var string
@@ -55,15 +55,13 @@ class Server
         $this->address = $address;
     }
 
-    public function run()
+    public function create()
     {
-        $server = IoServer::factory(
+        return IoServer::factory(
             new WsServer($this->bridge),
             $this->getPort(),
             $this->getAddress()
         );
-
-        $server->run();
     }
 
     /**

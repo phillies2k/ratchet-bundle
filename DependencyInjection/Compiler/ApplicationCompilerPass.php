@@ -56,7 +56,7 @@ class ApplicationCompilerPass implements CompilerPassInterface
         }
 
         $container
-            ->getDefinition('p2_ratchet.bridge')
+            ->getDefinition('p2_ratchet.socket.bridge')
             ->addMethodCall('setAllowedEvents', array($events));
     }
 }
