@@ -1,7 +1,7 @@
 P2RatchetBundle
 ===============
 
-Version: **1.0.4**
+Version: **1.0.5**
 
 
 ### Installation
