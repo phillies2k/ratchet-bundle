@@ -45,21 +45,7 @@ php app/console ratchet:start [port] [address]
 | SOCKET_MESSAGE | Fired when a message was send through a connection.  |
 
 
-### Javascript API
-
-```javascript
-
-// create the websocket
-var socket = new Ratchet('ws://localhost:8080');
-
-// implement your custom event handlers
-socket.on('my.custom.event', function(data) {
-    // ...
-});
-
-```
-
-#### Events
+#### WebSocket Events
 
 ##### Client:
 | Event                 | Payload            | Description           |
@@ -74,18 +60,20 @@ socket.on('my.custom.event', function(data) {
 
 
 ### Getting started
+
 The [ApplicationInterface](Socket/ApplicationInterface) acts only as an alias for symfony`s EventSubscriberInterface. Its used to detect websocket event subscribers explicitly.
 
 Write your application as you would write a common event subscriber. The event handler methods will receive exactly one argument: a [MessageEvent](Socket/Event/MessageEvent) instance, containing information about the socket connection and the payload (see [ConnectionInterface](Socket/Connection/ConnectionInterface) and [EventPayload](Socket/Payload/EventPayload) for more details).
 
 ```php
+# src/Acme/Bundle/ChatBundle/WebSocket/Application.php
 <?php
 
 namespace Acme\Bundle\ChatBundle\WebSocket;
 
 use P2\Bundle\RatchetBundle\Socket\ApplicationInterface;
 
-class ConsoleChat implements ApplicationInterface
+class Application implements ApplicationInterface
 {
     public static function getSubscribedEvents()
     {
@@ -100,10 +88,44 @@ class ConsoleChat implements ApplicationInterface
 
 ```
 
+##### Service DI Configuration
+
+Create a service definition for your websocket application. Tag your service definition with `p2_ratchet.application` to
+register the application at the socket server.
+
+The service definition may look like this:
+```yaml
+# src/Acme/Bundle/ChatBundle/Resources/config/services.yml
+services:
+
+    # websocket chat application
+    websocket_chat:
+        class: Acme\Bundle\ChatBundle\WebSocket\ChatApplication
+        tags:
+            - { name: p2_ratchet.application }
+```
+
+
+### Javascript API
+
+```javascript
+
+// create the websocket
+var socket = new Ratchet('ws://localhost:8080');
+
+// implement your custom event handlers
+socket.on('my.custom.event', function(data) {
+    // ...
+});
+
+```
+
 
 ### Simple console chat application example
 
+The application code:
 ```php
+# src/Acme/Bundle/ChatBundle/WebSocket/ChatApplication.php
 <?php
 
 namespace Acme\Bundle\ChatBundle\WebSocket;
@@ -112,7 +134,7 @@ use P2\Bundle\RatchetBundle\Event\MessageEvent;
 use P2\Bundle\RatchetBundle\Socket\ApplicationInterface;
 use P2\Bundle\RatchetBundle\Socket\Payload\EventPayload;
 
-class ConsoleChat implements ApplicationInterface
+class ChatApplication implements ApplicationInterface
 {
     public static function getSubscribedEvents()
     {
@@ -152,6 +174,7 @@ class ConsoleChat implements ApplicationInterface
 
 The respective twig template may look like this:
 ```html
+# src/Acme/Bundle/ChatBundle/Resources/views/chat.html.twig
 {% extends '::base.html.twig' %}
 
 {% block body %}
