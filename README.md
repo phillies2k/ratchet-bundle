@@ -102,6 +102,7 @@ services:
     websocket_chat:
         class: Acme\Bundle\ChatBundle\WebSocket\ChatApplication
         tags:
+            - { name: kernel.event_subscriber }
             - { name: p2_ratchet.application }
 ```
 
