@@ -108,6 +108,9 @@ services:
 
 ### Javascript API
 
+The api represents just a simple wrapper for the native javascript WebSocket to ease developers life. It basically
+implements the basic communication logic with the socket server.
+
 ```javascript
 
 // create the websocket
@@ -116,6 +119,11 @@ var socket = new Ratchet('ws://localhost:8080');
 // implement your custom event handlers
 socket.on('my.custom.event', function(data) {
     // ...
+});
+
+// emit an event
+socket.emit('some.event', {
+    // event data...
 });
 
 ```
