@@ -124,7 +124,7 @@ class Bridge implements MessageComponentInterface
                             $connection->getRemoteAddress(),
                             $connection->getId(),
                             ConnectionEvent::SOCKET_AUTH_SUCCESS,
-                            $connection->getClient()->jsonSerialize()
+                            $connection->getClient()->getAccessToken()
                         )
                     );
 
