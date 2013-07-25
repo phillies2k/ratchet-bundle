@@ -1,13 +1,12 @@
 parameters:
 
     # classes
-    p2_ratchet.authentication_handler.class: P2\Bundle\RatchetBundle\Security\AuthenticationSuccessHandler
-    p2_ratchet.bridge.class: P2\Bundle\RatchetBundle\Socket\Bridge
-    p2_ratchet.connection_manager.class: P2\Bundle\RatchetBundle\Socket\Connection\ConnectionManager
-    p2_ratchet.server.class: Ratchet\Server\IoServer
-    p2_ratchet.websocket.server.class: Ratchet\WebSocket\WsServer
-    p2_ratchet.twig_extension.class: P2\Bundle\RatchetBundle\Twig\Extension\RatchetExtension
-    p2_ratchet.command.class: P2\Bundle\RatchetBundle\Command\RatchetCommand
+    p2_ratchet.security.authentication_handler.class: P2\Bundle\RatchetBundle\Security\AuthenticationSuccessHandler
+    p2_ratchet.socket.bridge.class: P2\Bundle\RatchetBundle\Socket\Bridge
+    p2_ratchet.socket.connection_manager.class: P2\Bundle\RatchetBundle\Socket\Connection\ConnectionManager
+    p2_ratchet.socket.server.class: P2\Bundle\RatchetBundle\Socket\Server
+    p2_ratchet.twig.ratchet_extension.class: P2\Bundle\RatchetBundle\Twig\Extension\RatchetExtension
+    p2_ratchet.command.ratchet_command.class: P2\Bundle\RatchetBundle\Command\RatchetCommand
 
     # interfaces
     p2_ratchet.application.interface: P2\Bundle\RatchetBundle\Socket\ApplicationInterface
@@ -19,41 +18,35 @@ parameters:
 services:
 
     # socket connection manager
-    p2_ratchet.connection_manager:
-        class: %p2_ratchet.connection_manager.class%
+    p2_ratchet.socket.connection_manager:
+        class: %p2_ratchet.socket.connection_manager.class%
         arguments: [ @p2_ratchet.client_provider, @event_dispatcher ]
 
     # socket bridge
-    p2_ratchet.bridge:
-        class: %p2_ratchet.bridge.class%
-        arguments: [ @p2_ratchet.connection_manager ]
+    p2_ratchet.socket.bridge:
+        class: %p2_ratchet.socket.bridge.class%
+        arguments: [ @p2_ratchet.socket.connection_manager ]
 
-    # websocket server
-    p2_ratchet.websocket_server:
-        class: %p2_ratchet.websocket.server.class%
-        arguments: [ @p2_ratchet.bridge ]
+    # socket server
+    p2_ratchet.socket.server:
+        class: %p2_ratchet.socket.server.class%
+        arguments: [ @p2_ratchet.socket.bridge ]
 
-    # io server
-    p2_ratchet.server:
-        class: %p2_ratchet.server.class%
-        factory_class: %p2_ratchet.server.class%
-        factory_method: factory
+    # ratchet command
+    p2_ratchet.command.ratchet_command:
+        class: %p2_ratchet.command.ratchet_command.class%
+        calls:
+            - [ setServer, [ @p2_ratchet.socket.server ]]
 
     # authentication listener
-    p2_ratchet.authentication_handler:
-        class: %p2_ratchet.authentication_handler.class%
+    p2_ratchet.security.authentication_handler:
+        class: %p2_ratchet.security.authentication_handler.class%
         arguments: [ @p2_ratchet.client_provider ]
         tags:
             - { name: kernel.event_listener, event: security.authentication.success, method: onAuthenticationSuccess }
 
     # twig client extension
-    p2_ratchet.twig_extension:
-        class: %p2_ratchet.twig_extension.class%
+    p2_ratchet.twig.ratchet_extension:
+        class: %p2_ratchet.twig.ratchet_extension.class%
         tags:
-            - { name: 'twig.extension' }
-
-    # console command
-    p2_ratchet.command:
-        class: %p2_ratchet.command.class%
-        calls:
-            - [ setServer, [ @p2_ratchet.server ]]
+            - { name: twig.extension }

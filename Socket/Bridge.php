@@ -26,16 +26,6 @@ use Symfony\Component\Console\Output\ConsoleOutput;
 class Bridge implements MessageComponentInterface
 {
     /**
-     * @var string
-     */
-    const ADDRESS = '0.0.0.0';
-
-    /**
-     * @var int
-     */
-    const PORT = 8080;
-
-    /**
      * @var ConnectionManagerInterface
      */
     protected $connectionManager;

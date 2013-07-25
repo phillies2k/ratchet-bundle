@@ -37,12 +37,12 @@ class RatchetCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         try {
-            if (! $this->getContainer()->has('p2_ratchet.server')) {
+            if (! $this->getContainer()->has('p2_ratchet.socket.server')) {
                 throw new \RuntimeException('Websocket server dic missing');
             }
 
-            /** @var \Ratchet\Server\IoServer $server */
-            $server = $this->getContainer()->get('p2_ratchet.server');
+            /** @var \P2\Bundle\RatchetBundle\Socket\Server $server */
+            $server = $this->getContainer()->get('p2_ratchet.socket.server');
 
             $output->writeln('<info>server starting</info>');
 

@@ -39,16 +39,11 @@ class P2RatchetExtension extends Extension implements PrependExtensionInterface
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');
 
-        $server = $container->getDefinition('p2_ratchet.server');
-        $server->setArguments(
-            array(
-                new Reference('p2_ratchet.websocket_server'),
-                $config['port'],
-                $config['address']
-            )
-        );
-
         $container->setAlias('p2_ratchet.client_provider', $config['provider']);
+        $container
+            ->getDefinition('p2_ratchet.socket.server')
+            ->addArgument($config['port'])
+            ->addArgument($config['address']);
     }
 
     /**

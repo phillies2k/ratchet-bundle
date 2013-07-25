@@ -9,7 +9,7 @@
  */
 namespace P2\Bundle\RatchetBundle\DependencyInjection;
 
-use P2\Bundle\RatchetBundle\Socket\Bridge;
+use P2\Bundle\RatchetBundle\Socket\Server;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
@@ -32,8 +32,8 @@ class Configuration implements ConfigurationInterface
             ->addDefaultsIfNotSet()
             ->children()
                 ->scalarNode('provider')->cannotBeEmpty()->end()
-                ->scalarNode('address')->defaultValue(Bridge::ADDRESS)->end()
-                ->scalarNode('port')->defaultValue(Bridge::PORT)->end()
+                ->scalarNode('address')->defaultValue(Server::ADDRESS)->end()
+                ->scalarNode('port')->defaultValue(Server::PORT)->end()
             ->end();
 
         return $treeBuilder;
