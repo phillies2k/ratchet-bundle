@@ -123,12 +123,26 @@ class ConsoleChat implements ApplicationInterface
 
     public function onSendMessage(MessageEvent $event)
     {
-        $event->getConnection()->broadcast($event->getPayload());
+        $client = $event->getConnection()->getClient()->jsonSerialize();
+        $message = $event->getPayload()->getData();
+
+        $event->getConnection()->broadcast(
+            new EventPayload(
+                'chat.message',
+                array(
+                    'client' => $client,
+                    'message' => $message
+                )
+            )
+        );
 
         $event->getConnection()->emit(
             new EventPayload(
-                'chat.message.send',
-                $event->getPayload()->getData()
+                'chat.message.sent',
+                array(
+                    'client' => $client,
+                    'message' => $message
+                )
             )
         );
     }
@@ -142,6 +156,7 @@ The respective twig template may look like this:
 
 {% block body %}
 
+    <div id="chat_frame"></div>
     <form id="send_message" method="post" action="">
         <input type="text" id="message" name="message">
         <button type="submit" name="send">send</button>
@@ -152,25 +167,27 @@ The respective twig template may look like this:
     <script type="text/javascript">
         $(function() {
 
+            function appendChatMessage(response) {
+                $('#chat_frame').append(
+                    $('<p>[<em>%s</em>]: <span>%s</span></p>'.replace(/%s/g,[ response.client.username, response.message ]))
+                );
+            }
+
             var server = new Ratchet('ws://localhost:8080');
 
-            // called when you received a new message
-            server.on('chat.message', function(msg, client) {
-                console.log('[%s]: %s', client.username, msg);
-            });
-
-            // called when you have sent a new message
-            server.on('chat.message.sent', function(msg, client) {
-                console.log('[%s]: %s', client.username, msg);
-            });
+            // bind listeners
+            server.on('chat.message.sent', appendChatMessage);
+            server.on('chat.message', appendChatMessage);
 
             $('#send_message').submit(function(e) {
                 e.preventDefault();
 
-                // emit the chat.send event with the message
-                server.emit('chat.send', $('#message').val());
+                var message = $('#message').val();
 
-                $('#message').val("");
+                if (message.length) {
+                    server.emit('chat.send', $('#message').val());
+                    $('#message').val("");
+                }
 
                 return false;
             });
