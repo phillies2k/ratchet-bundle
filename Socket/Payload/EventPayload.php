@@ -65,7 +65,12 @@ class EventPayload implements PayloadInterface
      */
     public function encode()
     {
-        return json_encode($this->data);
+        return json_encode(
+            array(
+                'event' => $this->getEvent(),
+                'data' => $this->getData()
+            )
+        );
     }
 
     /**

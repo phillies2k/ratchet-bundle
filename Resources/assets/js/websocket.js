@@ -90,18 +90,22 @@
      * @param e The websocket event
      */
     function onMessage(e) {
-        try {
-            var data = JSON.parse(e.data);
+        var data;
 
-            if (data.event && data.data) {
-                invokeEventHandlers.call(this, data.event, data.data, e);
-            } else if (Ratchet.debug) {
-                console.error(e);
-            }
+        try {
+            data = JSON.parse(e.data);
         } catch (e) {
             if (Ratchet.debug) {
-                console.error(e);
+                console.error('Invalid json format: ' + e.data);
             }
+
+            return;
+        }
+
+        if (data.event && data.data) {
+            invokeEventHandlers.call(this, data.event, data.data, e);
+        } else if (Ratchet.debug) {
+            console.error('Invalid data format. Assuming { event: "...", data: ... } structure.');
         }
     }
 
