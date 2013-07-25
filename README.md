@@ -138,18 +138,45 @@ class ConsoleChat implements ApplicationInterface
 
 The respective twig template may look like this:
 ```html
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <title>Console Chat</title>
-</head>
-<body>
+{% extends '::base.html.twig' %}
+
+{% block body %}
+
     <form id="send_message" method="post" action="">
-        <input type="text" name="message">
+        <input type="text" id="message" name="message">
         <button type="submit" name="send">send</button>
     </form>
+
     {{ p2_ratchet_client(app.debug, app.user) }}
-</body>
-</html>
+
+    <script type="text/javascript">
+        $(function() {
+
+            var server = new Ratchet('ws://localhost:8080');
+
+            // called when you received a new message
+            server.on('chat.message', function(msg, client) {
+                console.log('[%s]: %s', client.username, msg);
+            });
+
+            // called when you have sent a new message
+            server.on('chat.message.sent', function(msg, client) {
+                console.log('[%s]: %s', client.username, msg);
+            });
+
+            $('#send_message').submit(function(e) {
+                e.preventDefault();
+
+                // emit the chat.send event with the message
+                server.emit('chat.send', $('#message').val());
+
+                $('#message').val("");
+
+                return false;
+            });
+        });
+    </script>
+
+{% endblock %}
+
 ```
