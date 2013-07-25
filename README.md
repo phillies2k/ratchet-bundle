@@ -88,7 +88,7 @@ class Application implements ApplicationInterface
 
 ```
 
-##### Service DI Configuration
+#### Service DI Configuration
 
 Create a service definition for your websocket application. Tag your service definition with `p2_ratchet.application` to
 register the application at the socket server.
