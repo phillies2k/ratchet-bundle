@@ -37,11 +37,11 @@ class P2RatchetExtension extends Extension implements PrependExtensionInterface
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');
 
-        $container->setAlias('p2_ratchet.client_provider', $config['provider']);
+        $container->setAlias('p2_ratchet.websocket.client_provider', $config['provider']);
         $container
-            ->getDefinition('p2_ratchet.socket.server')
-            ->addArgument($config['port'])
-            ->addArgument($config['address']);
+            ->getDefinition('p2_ratchet.websocket.server_factory')
+            ->addMethodCall('setAddress', array($config['address']))
+            ->addMethodCall('setPort', array($config['port']));
     }
 
     /**
@@ -58,7 +58,7 @@ class P2RatchetExtension extends Extension implements PrependExtensionInterface
             $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
             $loader->load('services.yml');
 
-            $scripts = $container->getParameter('p2_ratchet.assetic.websocket_js');
+            $scripts = $container->getParameter('p2_ratchet.assetic.assets_js');
             $assetPath = __DIR__ . '/../Resources/assets';
 
             $inputs = array_map(function($value) use ($assetPath) {

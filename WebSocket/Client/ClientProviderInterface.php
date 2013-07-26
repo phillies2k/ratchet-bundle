@@ -7,11 +7,11 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace P2\Bundle\RatchetBundle\Socket;
+namespace P2\Bundle\RatchetBundle\WebSocket\Client;
 
 /**
  * Interface ClientProviderInterface
- * @package P2\Bundle\RatchetBundle\Socket
+ * @package P2\Bundle\RatchetBundle\WebSocket\Client
  */
 interface ClientProviderInterface 
 {
@@ -25,7 +25,7 @@ interface ClientProviderInterface
     public function findByAccessToken($accessToken);
 
     /**
-     * Updates the given client in the data layer.
+     * Updates the given client in the underlying data layer.
      *
      * @param ClientInterface $client
      * @return void

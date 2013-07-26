@@ -7,9 +7,9 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace P2\Bundle\RatchetBundle\Twig\Extension;
+namespace P2\Bundle\RatchetBundle\Twig;
 
-use P2\Bundle\RatchetBundle\Socket\ClientInterface;
+use P2\Bundle\RatchetBundle\WebSocket\Client\ClientInterface;
 
 /**
  * Class RatchetExtension

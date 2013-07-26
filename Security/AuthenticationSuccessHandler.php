@@ -9,8 +9,8 @@
  */
 namespace P2\Bundle\RatchetBundle\Security;
 
-use P2\Bundle\RatchetBundle\Socket\ClientInterface;
-use P2\Bundle\RatchetBundle\Socket\ClientProviderInterface;
+use P2\Bundle\RatchetBundle\WebSocket\Client\ClientInterface;
+use P2\Bundle\RatchetBundle\WebSocket\Client\ClientProviderInterface;
 use Symfony\Component\Security\Core\Event\AuthenticationEvent;
 
 /**

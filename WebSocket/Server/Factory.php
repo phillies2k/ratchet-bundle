@@ -7,16 +7,16 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace P2\Bundle\RatchetBundle\Socket;
+namespace P2\Bundle\RatchetBundle\WebSocket\Server;
 
 use Ratchet\Server\IoServer;
 use Ratchet\WebSocket\WsServer;
 
 /**
- * Class Server
- * @package P2\Bundle\RatchetBundle\Socket
+ * Class Factory
+ * @package P2\Bundle\RatchetBundle\WebSocket\Factory
  */
-class Server
+class Factory
 {
     /**
      * @var string
@@ -67,7 +67,7 @@ class Server
     /**
      * @param string $address
      *
-     * @return Server
+     * @return Factory
      */
     public function setAddress($address)
     {
@@ -87,7 +87,7 @@ class Server
     /**
      * @param int $port
      *
-     * @return Server
+     * @return Factory
      */
     public function setPort($port)
     {

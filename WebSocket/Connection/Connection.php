@@ -7,15 +7,15 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace P2\Bundle\RatchetBundle\Socket\Connection;
+namespace P2\Bundle\RatchetBundle\WebSocket\Connection;
 
-use P2\Bundle\RatchetBundle\Socket\ClientInterface;
-use P2\Bundle\RatchetBundle\Socket\Payload\EventPayload;
+use P2\Bundle\RatchetBundle\WebSocket\Client\ClientInterface;
+use P2\Bundle\RatchetBundle\WebSocket\Payload;
 use Ratchet\ConnectionInterface as RatchetConnectionInterface;
 
 /**
  * Class Connection
- * @package P2\Bundle\RatchetBundle\Socket\Connection
+ * @package P2\Bundle\RatchetBundle\WebSocket\Connection
  */
 
 class Connection implements ConnectionInterface
@@ -89,11 +89,11 @@ class Connection implements ConnectionInterface
     /**
      * Emits an event to this connection with the given payload.
      *
-     * @param EventPayload $payload
+     * @param Payload $payload
      *
      * @return boolean
      */
-    public function emit(EventPayload $payload)
+    public function emit(Payload $payload)
     {
         $this->connection->send($payload->encode());
     }
@@ -101,10 +101,10 @@ class Connection implements ConnectionInterface
     /**
      * Broadcasts an event to all
      *
-     * @param EventPayload $payload
+     * @param Payload $payload
      * @return mixed
      */
-    public function broadcast(EventPayload $payload)
+    public function broadcast(Payload $payload)
     {
         foreach ($this->connectionManager->getConnections() as $connection) {
             if ($connection->getId() !== $this->getId()) {

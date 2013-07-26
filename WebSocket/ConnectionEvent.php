@@ -7,14 +7,15 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace P2\Bundle\RatchetBundle\Socket\Event;
+namespace P2\Bundle\RatchetBundle\WebSocket\Event;
 
-use P2\Bundle\RatchetBundle\Socket\Connection\ConnectionInterface;
+use P2\Bundle\RatchetBundle\WebSocket\Connection\ConnectionInterface;
+use P2\Bundle\RatchetBundle\WebSocket\Payload;
 use Symfony\Component\EventDispatcher\Event;
 
 /**
  * Class ConnectionEvent
- * @package P2\Bundle\RatchetBundle\Socket\Event
+ * @package P2\Bundle\RatchetBundle\WebSocket\Event
  */
 class ConnectionEvent extends Event
 {
@@ -59,11 +60,18 @@ class ConnectionEvent extends Event
     protected $connection;
 
     /**
-     * @param ConnectionInterface $connection
+     * @var Payload
      */
-    function __construct(ConnectionInterface $connection)
+    protected $payload;
+
+    /**
+     * @param ConnectionInterface $connection
+     * @param Payload $payload
+     */
+    function __construct(ConnectionInterface $connection, Payload $payload = null)
     {
         $this->connection = $connection;
+        $this->payload = $payload;
     }
 
     /**
@@ -72,5 +80,13 @@ class ConnectionEvent extends Event
     public function getConnection()
     {
         return $this->connection;
+    }
+
+    /**
+     * @return Payload
+     */
+    public function getPayload()
+    {
+        return $this->payload;
     }
 }

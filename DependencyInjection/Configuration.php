@@ -9,7 +9,7 @@
  */
 namespace P2\Bundle\RatchetBundle\DependencyInjection;
 
-use P2\Bundle\RatchetBundle\Socket\Server;
+use P2\Bundle\RatchetBundle\WebSocket\Server\Factory;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
@@ -30,9 +30,9 @@ class Configuration implements ConfigurationInterface
         $rootNode
             ->addDefaultsIfNotSet()
             ->children()
-                ->scalarNode('provider')->cannotBeEmpty()->end()
-                ->scalarNode('address')->defaultValue(Server::ADDRESS)->end()
-                ->scalarNode('port')->defaultValue(Server::PORT)->end()
+                ->scalarNode('provider')->defaultNull()->end()
+                ->scalarNode('address')->defaultValue(Factory::ADDRESS)->end()
+                ->scalarNode('port')->defaultValue(Factory::PORT)->end()
             ->end();
 
         return $treeBuilder;

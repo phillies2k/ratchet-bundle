@@ -14,7 +14,7 @@ Version: **1.0.5**
 ### Configuration
 
     p2_ratchet:
-        provider: my_provider   # The ClientProviderInterface implementation
+        provider: ~             # The client provider to use, null for default
         address: 0.0.0.0        # The address to receive sockets on (0.0.0.0 means receive from any)
         port: 8080              # The port the socket server will listen on
 

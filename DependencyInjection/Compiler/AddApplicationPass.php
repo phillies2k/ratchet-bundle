@@ -13,10 +13,10 @@ use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 /**
- * Class ApplicationCompilerPass
+ * Class AddApplicationPass
  * @package P2\Bundle\RatchetBundle\DependencyInjection\Compiler
  */
-class ApplicationCompilerPass implements CompilerPassInterface
+class AddApplicationPass implements CompilerPassInterface
 {
     /**
      * @param ContainerBuilder $container
@@ -30,28 +30,14 @@ class ApplicationCompilerPass implements CompilerPassInterface
 
         foreach ($taggedServiceIds as $serviceId => $attributes) {
             $service = $container->getDefinition($serviceId);
-
-            $interface = $container->getParameter('p2_ratchet.application.interface');
-            $classname = $container->getParameter(trim($service->getClass(), '%'));
-
-            $reflection = new \ReflectionClass($classname);
-
-            if (! $reflection->implementsInterface($interface)) {
-
-                throw new \InvalidArgumentException(
-                    sprintf(
-                        'The tagged service definition "%s" must implement the interface: %s',
-                        $serviceId,
-                        $interface
-                    ));
-            }
-
+            $parameter = $container->getParameterBag()->escapeValue($service->getClass());
+            $classname = $container->getParameter($parameter);
             $eventList = array_keys($classname::getSubscribedEvents());
             $events = array_merge($events, $eventList);
         }
 
         $container
-            ->getDefinition('p2_ratchet.socket.bridge')
+            ->getDefinition('p2_ratchet.websocket.server_bridge')
             ->addMethodCall('setAllowedEvents', array($events));
     }
 }

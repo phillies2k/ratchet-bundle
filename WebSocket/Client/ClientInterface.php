@@ -7,11 +7,11 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace P2\Bundle\RatchetBundle\Socket;
+namespace P2\Bundle\RatchetBundle\WebSocket\Client;
 
 /**
  * Interface ClientInterface
- * @package P2\Bundle\RatchetBundle\Socket
+ * @package P2\Bundle\RatchetBundle\WebSocket\Client
  */
 interface ClientInterface
 {

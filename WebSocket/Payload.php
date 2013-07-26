@@ -7,13 +7,13 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace P2\Bundle\RatchetBundle\Socket\Payload;
+namespace P2\Bundle\RatchetBundle\WebSocket;
 
 /**
- * Class EventPayload
- * @package P2\Bundle\RatchetBundle\Socket\Payload
+ * Class Payload
+ * @package P2\Bundle\RatchetBundle\WebSocket
  */
-class EventPayload implements PayloadInterface
+class Payload
 {
     /**
      * @var array
@@ -76,7 +76,7 @@ class EventPayload implements PayloadInterface
     /**
      * @param string $json
      *
-     * @return EventPayload
+     * @return Payload
      */
     public static function createFromJson($json)
     {
@@ -86,7 +86,7 @@ class EventPayload implements PayloadInterface
     /**
      * @param array $data
      *
-     * @return EventPayload
+     * @return Payload
      */
     public static function createFromArray(array $data)
     {
