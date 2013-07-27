@@ -10,6 +10,7 @@
 namespace P2\Bundle\RatchetBundle\WebSocket\Connection;
 
 use P2\Bundle\RatchetBundle\WebSocket\Client\ClientProviderInterface;
+use P2\Bundle\RatchetBundle\WebSocket\Exception\NotManagedConnectionException;
 use Ratchet\ConnectionInterface as SocketConnection;
 
 /**
@@ -24,7 +25,7 @@ class ConnectionManager implements ConnectionManagerInterface
     protected $clientProvider;
 
     /**
-     * @var \SplObjectStorage
+     * @var ConnectionInterface[]
      */
     protected $connections;
 
@@ -34,7 +35,15 @@ class ConnectionManager implements ConnectionManagerInterface
     public function __construct(ClientProviderInterface $clientProvider)
     {
         $this->clientProvider = $clientProvider;
-        $this->connections = new \SplObjectStorage();
+        $this->connections = array();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function hasConnection(SocketConnection $socketConnection)
+    {
+        return isset($this->connections[$socketConnection->resourceId]);
     }
 
     /**
@@ -42,7 +51,12 @@ class ConnectionManager implements ConnectionManagerInterface
      */
     public function getConnection(SocketConnection $socketConnection)
     {
-        return $this->connections->offsetGet($socketConnection);
+        if (! $this->hasConnection($socketConnection)) {
+
+            return null;
+        }
+
+        return $this->connections[$socketConnection->resourceId];
     }
 
     /**
@@ -50,13 +64,7 @@ class ConnectionManager implements ConnectionManagerInterface
      */
     public function getConnections()
     {
-        $connections = array();
-
-        foreach ($this->connections as $connection) {
-            $connections[] = $this->connections->offsetGet($connection);
-        }
-
-        return $connections;
+        return $this->connections;
     }
 
     /**
@@ -64,10 +72,14 @@ class ConnectionManager implements ConnectionManagerInterface
      */
     public function addConnection(SocketConnection $socketConnection)
     {
-        if (! $this->connections->offsetExists($socketConnection)) {
+        if (! $this->hasConnection($socketConnection)) {
             $connection = new Connection($this, $socketConnection);
-            $this->connections->offsetSet($socketConnection, $connection);
+            $this->connections[$connection->getId()] = $connection;
+
+            return $connection;
         }
+
+        return false;
     }
 
     /**
@@ -75,10 +87,17 @@ class ConnectionManager implements ConnectionManagerInterface
      */
     public function closeConnection(SocketConnection $socketConnection)
     {
-        if ($this->connections->offsetExists($socketConnection)) {
-            $this->connections->detach($socketConnection);
-            $socketConnection->close();
+        if (! $this->hasConnection($socketConnection)) {
+
+            return false;
         }
+
+        $connection = $this->getConnection($socketConnection);
+        $connection->close();
+
+        unset($this->connections[$connection->getId()]);
+
+        return true;
     }
 
     /**
@@ -86,6 +105,10 @@ class ConnectionManager implements ConnectionManagerInterface
      */
     public function authenticate(ConnectionInterface $connection, $accessToken)
     {
+        if (! isset($this->connections[$connection->getId()])) {
+            throw new NotManagedConnectionException();
+        }
+
         if (null !== $client = $this->clientProvider->findByAccessToken($accessToken)) {
             $connection->setClient($client);
 

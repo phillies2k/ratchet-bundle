@@ -101,6 +101,10 @@ class Bridge implements MessageComponentInterface
     public function onMessage(ConnectionInterface $from, $msg)
     {
         try {
+            if (! $this->connectionManager->hasConnection($from)) {
+                throw new NotManagedConnectionException('Unknown Connection');
+            }
+
             if (null === $payload = Payload::createFromJson($msg)) {
                 throw new InvalidPayloadException(sprintf('Invalid payload received: "%s"', $msg));
             }
@@ -109,10 +113,7 @@ class Bridge implements MessageComponentInterface
                 throw new InvalidEventCallException(sprintf('Unregistered event: "%s".', $payload->getEvent()));
             }
 
-            if (null === $connection = $this->connectionManager->getConnection($from)) {
-                throw new NotManagedConnectionException('Unknown Connection');
-            }
-
+            $connection = $this->connectionManager->getConnection($from);
             $event = $payload->getEvent();
 
             if ($event === ConnectionEvent::SOCKET_AUTH_REQUEST) {

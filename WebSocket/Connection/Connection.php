@@ -112,4 +112,12 @@ class Connection implements ConnectionInterface
             }
         }
     }
+
+    /**
+     * @return void
+     */
+    public function close()
+    {
+        $this->connection->close();
+    }
 }

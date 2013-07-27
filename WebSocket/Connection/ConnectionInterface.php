@@ -63,4 +63,9 @@ interface ConnectionInterface
      * @return void
      */
     public function broadcast(Payload $payload);
+
+    /**
+     * @return void
+     */
+    public function close();
 }

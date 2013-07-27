@@ -9,6 +9,7 @@
  */
 namespace P2\Bundle\RatchetBundle\WebSocket\Connection;
 
+use P2\Bundle\RatchetBundle\WebSocket\Exception\NotManagedConnectionException;
 use Ratchet\ConnectionInterface as SocketConnection;
 
 /**
@@ -18,7 +19,15 @@ use Ratchet\ConnectionInterface as SocketConnection;
 interface ConnectionManagerInterface
 {
     /**
-     * Returns the client connection for the given connection.
+     * Returns true if the given socket connection is managed by this manager, false otherwise.
+     *
+     * @param SocketConnection $socketConnection The socket connection to check
+     * @return boolean True when the given connection is managed, false otherwise.
+     */
+    public function hasConnection(SocketConnection $socketConnection);
+
+    /**
+     * Returns the connection for the given socket connection.
      *
      * @param SocketConnection $socketConnection
      *
@@ -38,12 +47,12 @@ interface ConnectionManagerInterface
      *
      * @param SocketConnection $socketConnection
      *
-     * @return ConnectionManagerInterface
+     * @return ConnectionInterface
      */
     public function addConnection(SocketConnection $socketConnection);
 
     /**
-     * Close and remove a managed client connection identified by the given connection.
+     * Closes and removes a managed connection by the given socket connection.
      *
      * @param SocketConnection $socketConnection
      *
@@ -52,13 +61,14 @@ interface ConnectionManagerInterface
     public function closeConnection(SocketConnection $socketConnection);
 
     /**
-     * Authenticates a managed socket connection by the given token. Returns the created client connection on success,
-     * false otherwise. Throws NotManagedConnectionException when the given connection is not managed by this manager.
+     * Authenticates a managed connection by the given access token. Throws NotManagedConnectionException when the given
+     * connection is not managed by this manager.
      *
-     * @param ConnectionInterface $connection
-     * @param string $accessToken
+     * @param ConnectionInterface $connection The connection to authenticate
+     * @param string $accessToken The token used to authenticate this connection
      *
-     * @return boolean
+     * @return boolean True on success, false otherwise
+     * @throws NotManagedConnectionException
      */
     public function authenticate(ConnectionInterface $connection, $accessToken);
 }
