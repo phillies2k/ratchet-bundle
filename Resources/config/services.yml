@@ -60,7 +60,8 @@ services:
     # console command
     p2_ratchet.command.socket_server_command:
         class: %p2_ratchet.command.socket_server_command.class%
-        arguments: [ @p2_ratchet.websocket.server_factory ]
+        calls:
+            - [ setFactory, [ @p2_ratchet.websocket.server_factory ]]
 
     # authentication listener
     p2_ratchet.security.authentication_handler:
