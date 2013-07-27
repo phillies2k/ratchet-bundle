@@ -7,7 +7,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace P2\Bundle\RatchetBundle\WebSocket\Event;
+namespace P2\Bundle\RatchetBundle\WebSocket;
 
 use P2\Bundle\RatchetBundle\WebSocket\Connection\ConnectionInterface;
 use P2\Bundle\RatchetBundle\WebSocket\Payload;
