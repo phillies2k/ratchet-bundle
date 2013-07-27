@@ -52,11 +52,12 @@ interface ConnectionManagerInterface
     public function addConnection(SocketConnection $socketConnection);
 
     /**
-     * Closes and removes a managed connection by the given socket connection.
+     * Closes and removes a managed connection by the given socket connection. Returns the connection that was closed on
+     * success or false otherwise,
      *
      * @param SocketConnection $socketConnection
      *
-     * @return ConnectionManagerInterface
+     * @return boolean|ConnectionInterface The connection that was closed, false otherwise.
      */
     public function closeConnection(SocketConnection $socketConnection);
 

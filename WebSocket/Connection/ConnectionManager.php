@@ -97,7 +97,7 @@ class ConnectionManager implements ConnectionManagerInterface
 
         unset($this->connections[$connection->getId()]);
 
-        return true;
+        return $connection;
     }
 
     /**

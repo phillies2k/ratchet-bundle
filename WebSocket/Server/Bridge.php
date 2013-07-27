@@ -10,13 +10,14 @@
 namespace P2\Bundle\RatchetBundle\WebSocket\Server;
 
 use P2\Bundle\RatchetBundle\WebSocket\Connection\ConnectionManagerInterface;
+use P2\Bundle\RatchetBundle\WebSocket\Connection\ConnectionInterface;
 use P2\Bundle\RatchetBundle\WebSocket\ConnectionEvent;
 use P2\Bundle\RatchetBundle\WebSocket\Exception\InvalidPayloadException;
 use P2\Bundle\RatchetBundle\WebSocket\Exception\NotManagedConnectionException;
 use P2\Bundle\RatchetBundle\WebSocket\Exception\InvalidEventCallException;
 use P2\Bundle\RatchetBundle\WebSocket\Payload;
 use Psr\Log\LoggerInterface;
-use Ratchet\ConnectionInterface;
+use Ratchet\ConnectionInterface as SocketConnection;
 use Ratchet\MessageComponentInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
@@ -66,39 +67,54 @@ class Bridge implements MessageComponentInterface
     }
 
     /**
-     * @param ConnectionInterface $conn
+     * @param SocketConnection $conn
      */
-    public function onOpen(ConnectionInterface $conn)
+    public function onOpen(SocketConnection $conn)
     {
-        $this->connectionManager->addConnection($conn);
+        $connection = $this->connectionManager->addConnection($conn);
+
+        $this->logger->notice(
+            sprintf(
+                'New connection <info>#%s</info> (<comment>%s</comment>)',
+                $connection->getId(),
+                $connection->getRemoteAddress()
+            )
+        );
     }
 
     /**
-     * @param ConnectionInterface $conn
+     * @param SocketConnection $conn
      * @throws \RuntimeException
      */
-    public function onClose(ConnectionInterface $conn)
+    public function onClose(SocketConnection $conn)
     {
-        $this->connectionManager->closeConnection($conn);
-        $this->logger->notice('connection closed.');
+        $connection = $this->connectionManager->closeConnection($conn);
+
+        $this->logger->notice(
+            sprintf(
+                'Closed connection <info>#%s</info> (<comment>%s</comment>)',
+                $connection->getId(),
+                $connection->getRemoteAddress()
+            )
+        );
     }
 
     /**
-     * @param ConnectionInterface $conn
+     * @param SocketConnection $conn
      * @param \Exception $e
      */
-    public function onError(ConnectionInterface $conn, \Exception $e)
+    public function onError(SocketConnection $conn, \Exception $e)
     {
         $this->connectionManager->closeConnection($conn);
         $this->logger->error($e->getMessage());
     }
 
     /**
-     * @param ConnectionInterface $from
+     * @param SocketConnection $from
      * @param string $msg
      * @throws \Exception
      */
-    public function onMessage(ConnectionInterface $from, $msg)
+    public function onMessage(SocketConnection $from, $msg)
     {
         try {
             if (! $this->connectionManager->hasConnection($from)) {
@@ -114,46 +130,8 @@ class Bridge implements MessageComponentInterface
             }
 
             $connection = $this->connectionManager->getConnection($from);
-            $event = $payload->getEvent();
+            $this->handle($connection, $payload);
 
-            if ($event === ConnectionEvent::SOCKET_AUTH_REQUEST) {
-                if (! $this->connectionManager->authenticate($connection, $payload->getData())) {
-                    $this->eventDispatcher->dispatch(
-                        ConnectionEvent::SOCKET_AUTH_FAILURE,
-                        new ConnectionEvent($connection)
-                    );
-
-                    $connection->emit(
-                        new Payload(
-                            ConnectionEvent::SOCKET_AUTH_FAILURE,
-                            'Invalid access token.'
-                        )
-                    );
-
-                    $this->logger->notice('Client authentication error.');
-
-                    return;
-                }
-
-                $response = new Payload(
-                    ConnectionEvent::SOCKET_AUTH_SUCCESS,
-                    $connection->getClient()->jsonSerialize()
-                );
-
-                $this->eventDispatcher->dispatch(
-                    ConnectionEvent::SOCKET_AUTH_SUCCESS,
-                    new ConnectionEvent($connection)
-                );
-
-                $connection->emit($response);
-
-                $this->logger->notice('Client authenticated successfully.');
-
-                return;
-            }
-
-            $this->eventDispatcher->dispatch($event, new ConnectionEvent($connection, $payload));
-            $this->logger->notice(sprintf('Dispatched event: %s', $event));
         } catch (InvalidPayloadException $e) {
             $this->logger->debug($e->getMessage());
         } catch (InvalidEventCallException $e) {
@@ -164,6 +142,62 @@ class Bridge implements MessageComponentInterface
             $this->logger->error($e->getMessage());
             throw new \RuntimeException('An error occurred during server runtime.', 500, $e);
         }
+    }
+
+    /**
+     * Handles the the given payload received by the given connection.
+     *
+     * @param ConnectionInterface $connection
+     * @param Payload $payload
+     */
+    protected function handle(ConnectionInterface $connection, Payload $payload)
+    {
+        switch ($payload->getEvent()) {
+            case ConnectionEvent::SOCKET_AUTH_REQUEST:
+                $this->handleAuthentication($connection, $payload);
+                break;
+            default:
+                $this->eventDispatcher->dispatch($payload->getEvent(), new ConnectionEvent($connection, $payload));
+                $this->logger->notice(sprintf('Dispatched event: %s', $payload->getEvent()));
+        }
+    }
+
+    /**
+     * Handles the connection authentication.
+     *
+     * @param ConnectionInterface $connection
+     * @param Payload $payload
+     */
+    protected function handleAuthentication(ConnectionInterface $connection, Payload $payload)
+    {
+        if (! $this->connectionManager->authenticate($connection, $payload->getData())) {
+            $connection->emit(new Payload(ConnectionEvent::SOCKET_AUTH_FAILURE, 'Invalid access token.'));
+
+            $this->eventDispatcher->dispatch(ConnectionEvent::SOCKET_AUTH_FAILURE, new ConnectionEvent($connection));
+
+            $this->logger->notice(
+                sprintf(
+                    'Authentication error <info>#%s</info> (<comment>%s</comment>)',
+                    $connection->getId(),
+                    $connection->getRemoteAddress()
+                )
+            );
+
+            return;
+        }
+
+        $response = new Payload(ConnectionEvent::SOCKET_AUTH_SUCCESS, $connection->getClient()->jsonSerialize());
+        $connection->emit($response);
+
+        $this->eventDispatcher->dispatch(ConnectionEvent::SOCKET_AUTH_SUCCESS, new ConnectionEvent($connection));
+
+        $this->logger->notice(
+            sprintf(
+                'Authenticated <info>#%s</info> (<comment>%s</comment>)',
+                $connection->getId(),
+                $connection->getRemoteAddress()
+            )
+        );
     }
 
     /**
