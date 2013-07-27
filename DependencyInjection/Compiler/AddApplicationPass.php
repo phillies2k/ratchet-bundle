@@ -30,8 +30,10 @@ class AddApplicationPass implements CompilerPassInterface
 
         foreach ($taggedServiceIds as $serviceId => $attributes) {
             $service = $container->getDefinition($serviceId);
-            $parameter = $container->getParameterBag()->escapeValue($service->getClass());
-            $classname = $container->getParameter($parameter);
+
+            /** @var \P2\Bundle\RatchetBundle\WebSocket\Server\ApplicationInterface $classname */
+            $classname = $container->getParameterBag()->resolveValue($service->getClass());
+
             $eventList = array_keys($classname::getSubscribedEvents());
             $events = array_merge($events, $eventList);
         }

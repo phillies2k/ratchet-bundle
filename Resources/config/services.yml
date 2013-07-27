@@ -9,6 +9,7 @@ parameters:
     p2_ratchet.websocket.server_bridge.class: P2\Bundle\RatchetBundle\WebSocket\Server\Bridge
     p2_ratchet.websocket.server_factory.class: P2\Bundle\RatchetBundle\WebSocket\Server\Factory
     p2_ratchet.websocket.logger.class: Monolog\Logger
+    p2_ratchet.websocket.logger.name: ServerLog
     p2_ratchet.websocket.logger.stream_handler.class: Monolog\Handler\StreamHandler
     p2_ratchet.websocket.logger.stream_handler.stream: php://stdout
 
