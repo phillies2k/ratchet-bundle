@@ -62,7 +62,15 @@ class SocketServerCommand extends ContainerAwareCommand
             }
 
             $server = $factory->create();
-            $output->writeln(sprintf('<info><comment>Ratchet</comment> - listening on %s:%s</info>', $address, $port));
+
+            $output->writeln(
+                sprintf(
+                    '<info><comment>Ratchet</comment> - listening on %s:%s</info>',
+                    $factory->getAddress(),
+                    $factory->getPort()
+                )
+            );
+
             $server->run();
 
             return 0;
