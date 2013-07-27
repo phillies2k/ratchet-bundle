@@ -10,7 +10,7 @@
 namespace P2\Bundle\RatchetBundle\Command;
 
 use P2\Bundle\RatchetBundle\WebSocket\Server\Factory;
-use Symfony\Component\Console\Command\Command;
+use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -19,7 +19,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  * Class SocketServerCommand
  * @package P2\Bundle\RatchetBundle\Command
  */
-class SocketServerCommand extends Command
+class SocketServerCommand extends ContainerAwareCommand
 {
     /**
      * @var string
@@ -30,36 +30,6 @@ class SocketServerCommand extends Command
      * @var string
      */
     const ARG_PORT = 'port';
-
-    /**
-     * @var Factory
-     */
-    protected $factory;
-
-    /**
-     * @param Factory $factory
-     *
-     * @return SocketServerCommand
-     */
-    public function setFactory(Factory $factory)
-    {
-        $this->factory = $factory;
-
-        return $this;
-    }
-
-    /**
-     * @return Factory
-     * @throws \InvalidArgumentException
-     */
-    protected function getFactory()
-    {
-        if ($this->factory === null) {
-            throw new \InvalidArgumentException('factory must be set.');
-        }
-
-        return $this->factory;
-    }
 
     /**
      * {@inheritDoc}
@@ -80,7 +50,8 @@ class SocketServerCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         try {
-            $factory = $this->getFactory();
+            /** @var \P2\Bundle\RatchetBundle\WebSocket\Server\Factory $factory */
+            $factory = $this->getContainer()->get('p2_ratchet.websocket.server_factory');
 
             if (null !== $address = $input->getArgument(static::ARG_ADDRESS)) {
                 $factory->setAddress($address);
