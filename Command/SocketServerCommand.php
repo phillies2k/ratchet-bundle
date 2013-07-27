@@ -12,6 +12,7 @@ namespace P2\Bundle\RatchetBundle\Command;
 use P2\Bundle\RatchetBundle\WebSocket\Server\Factory;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -39,18 +40,13 @@ class SocketServerCommand extends Command
     /**
      * @param Factory $factory
      */
-    public function setFactory(Factory $factory)
+    public function __construct(Factory $factory)
     {
+        parent::__construct(null);
+
         $this->factory = $factory;
     }
 
-    /**
-     * @return Factory
-     */
-    protected function getFactory()
-    {
-        return $this->factory;
-    }
 
     /**
      * {@inheritDoc}
@@ -71,19 +67,15 @@ class SocketServerCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         try {
-            if (null === $factory = $this->getFactory()) {
-                throw new \Exception('Factory must be set.');
-            }
-
             if (null !== $address = $input->getArgument(static::ARG_ADDRESS)) {
-                $factory->setAddress($address);
+                $this->factory->setAddress($address);
             }
 
             if (null !== $port = $input->getArgument(static::ARG_PORT)) {
-                $factory->setPort($port);
+                $this->factory->setPort($port);
             }
 
-            $server = $factory->create();
+            $server = $this->factory->create();
             $output->writeln(sprintf('<info><comment>Ratchet</comment> - listening on %s:%s</info>', $address, $port));
             $server->run();
 

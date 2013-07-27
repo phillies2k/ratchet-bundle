@@ -15,14 +15,6 @@ parameters:
 
 services:
 
-    # client provider alias
-    p2_ratchet.websocket.client_provider:
-        alias: p2_ratchet.websocket.anonymous_client_provider
-
-    # anonymous client provider
-    p2_ratchet.websocket.anonymous_client_provider:
-        class: %p2_ratchet.websocket.anonymous_client_provider.class%
-
     # event dispatcher alias
     p2_ratchet.websocket.event_dispatcher:
         alias: event_dispatcher
@@ -39,11 +31,13 @@ services:
             - %p2_ratchet.websocket.logger.name%
             - [ @p2_ratchet.websocket.logger.stream_handler ]
 
-    # console command
-    p2_ratchet.command.socket_server_command:
-        class: %p2_ratchet.command.socket_server_command.class%
-        calls:
-            - [ setFactory, [ @p2_ratchet.websocket.server_factory ]]
+    # anonymous client provider
+    p2_ratchet.websocket.anonymous_client_provider:
+        class: %p2_ratchet.websocket.anonymous_client_provider.class%
+
+    # client provider default alias
+    p2_ratchet.websocket.client_provider:
+        alias: p2_ratchet.websocket.anonymous_client_provider
 
     # connection manager
     p2_ratchet.websocket.connection_manager:
@@ -62,6 +56,11 @@ services:
     p2_ratchet.websocket.server_factory:
         class: %p2_ratchet.websocket.server_factory.class%
         arguments: [ @p2_ratchet.websocket.server_bridge ]
+
+    # console command
+    p2_ratchet.command.socket_server_command:
+        class: %p2_ratchet.command.socket_server_command.class%
+        arguments: [ @p2_ratchet.websocket.server_factory ]
 
     # authentication listener
     p2_ratchet.security.authentication_handler:
