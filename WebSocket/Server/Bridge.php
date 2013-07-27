@@ -18,7 +18,6 @@ use P2\Bundle\RatchetBundle\WebSocket\Payload;
 use Psr\Log\LoggerInterface;
 use Ratchet\ConnectionInterface;
 use Ratchet\MessageComponentInterface;
-use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
 /**
@@ -46,11 +45,6 @@ class Bridge implements MessageComponentInterface
      * @var array
      */
     protected $allowedEvents = array();
-
-    /**
-     * @var ConsoleOutput
-     */
-    protected $output;
 
     /**
      * @param ConnectionManagerInterface $connectionManager

@@ -57,11 +57,13 @@ class Factory
 
     public function create()
     {
-        return IoServer::factory(
+        $server = IoServer::factory(
             new WsServer($this->bridge),
             $this->getPort(),
             $this->getAddress()
         );
+
+        return $server;
     }
 
     /**
