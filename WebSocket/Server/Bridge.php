@@ -10,7 +10,7 @@
 namespace P2\Bundle\RatchetBundle\WebSocket\Server;
 
 use P2\Bundle\RatchetBundle\WebSocket\Connection\ConnectionManagerInterface;
-use P2\Bundle\RatchetBundle\WebSocket\Event\ConnectionEvent;
+use P2\Bundle\RatchetBundle\WebSocket\ConnectionEvent;
 use P2\Bundle\RatchetBundle\WebSocket\Exception\InvalidPayloadException;
 use P2\Bundle\RatchetBundle\WebSocket\Exception\NotManagedConnectionException;
 use P2\Bundle\RatchetBundle\WebSocket\Exception\InvalidEventCallException;
