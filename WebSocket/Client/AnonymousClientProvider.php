@@ -31,7 +31,15 @@ class AnonymousClientProvider implements ClientProviderInterface
     {
         if ($accessToken === '') {
             $client = new AnonymousClient();
-            $this->clients[$accessToken] = $client;
+
+            $this->clients[$client->getAccessToken()] = $client;
+
+            return $client;
+        }
+
+        if (! isset($this->clients[$accessToken])) {
+
+            return null;
         }
 
         return $this->clients[$accessToken];
@@ -45,6 +53,8 @@ class AnonymousClientProvider implements ClientProviderInterface
      */
     public function updateClient(ClientInterface $client)
     {
-        $this->clients[$client->getAccessToken()] = $client;
+        if (isset($this->clients[$client->getAccessToken()])) {
+            $this->clients[$client->getAccessToken()] = $client;
+        }
     }
 }

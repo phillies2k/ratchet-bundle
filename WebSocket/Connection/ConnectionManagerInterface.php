@@ -22,6 +22,7 @@ interface ConnectionManagerInterface
      * Returns true if the given socket connection is managed by this manager, false otherwise.
      *
      * @param SocketConnection $socketConnection The socket connection to check
+     *
      * @return boolean True when the given connection is managed, false otherwise.
      */
     public function hasConnection(SocketConnection $socketConnection);

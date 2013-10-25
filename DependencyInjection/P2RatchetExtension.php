@@ -70,8 +70,7 @@ class P2RatchetExtension extends Extension implements PrependExtensionInterface
                 array(
                     'assets' => array(
                         'p2_ratchet_js' => array(
-                            'inputs' => $inputs,
-                            'output' => 'js/websocket.js'
+                            'inputs' => $inputs
                         )
                     )
                 )

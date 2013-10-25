@@ -16,7 +16,7 @@ namespace P2\Bundle\RatchetBundle\WebSocket;
 class Payload
 {
     /**
-     * @var sting
+     * @var string
      */
     protected $event;
     

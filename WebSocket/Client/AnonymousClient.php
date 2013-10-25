@@ -16,6 +16,19 @@ namespace P2\Bundle\RatchetBundle\WebSocket\Client;
 class AnonymousClient implements ClientInterface
 {
     /**
+     * @var string
+     */
+    protected $accessToken;
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->accessToken = hash('sha256', uniqid(microtime(true)));
+    }
+
+    /**
      * Sets the websocket access token for this client
      *
      * @param string $accessToken

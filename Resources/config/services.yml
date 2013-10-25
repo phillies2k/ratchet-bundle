@@ -9,6 +9,7 @@ parameters:
     p2_ratchet.websocket.server_bridge.class: P2\Bundle\RatchetBundle\WebSocket\Server\Bridge
     p2_ratchet.websocket.server_factory.class: P2\Bundle\RatchetBundle\WebSocket\Server\Factory
     p2_ratchet.websocket.logger.class: Monolog\Logger
+    p2_ratchet.websocket.logger.file: %kernel.root_dir%/logs/websocket_%kernel.environment%.log
     p2_ratchet.websocket.logger.name: ServerLog
     p2_ratchet.websocket.logger.stream_handler.class: Monolog\Handler\StreamHandler
 
@@ -26,7 +27,7 @@ services:
     # log file handler
     p2_ratchet.websocket.logger.file_handler:
         class: %p2_ratchet.websocket.logger.stream_handler.class%
-        arguments: [ '%kernel.root_dir%/logs/websocket.%kernel.environment%.log' ]
+        arguments: [ %p2_ratchet.websocket.logger.file% ]
 
     # server log
     p2_ratchet.websocket.logger:

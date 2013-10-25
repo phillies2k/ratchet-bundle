@@ -39,10 +39,8 @@ class Connection implements ConnectionInterface
      * @param ConnectionManagerInterface $connectionManager
      * @param RatchetConnectionInterface $connection
      */
-    function __construct(
-        ConnectionManagerInterface $connectionManager,
-        RatchetConnectionInterface $connection
-    ) {
+    function __construct(ConnectionManagerInterface $connectionManager, RatchetConnectionInterface $connection)
+    {
         $this->connectionManager = $connectionManager;
         $this->connection = $connection;
     }
