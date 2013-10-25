@@ -165,6 +165,7 @@ class CustomTimer implements PeriodicTimerInterface
         class: %acme_chat.websocket.loop.custom_timer%
         tags:
             - { name: p2_ratchet.periodic_timer }
+```
 
 
 ### Javascript API
