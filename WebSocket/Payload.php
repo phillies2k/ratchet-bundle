@@ -16,6 +16,11 @@ namespace P2\Bundle\RatchetBundle\WebSocket;
 class Payload
 {
     /**
+     * @var sting
+     */
+    protected $event;
+    
+    /**
      * @var array
      */
     protected $data;
