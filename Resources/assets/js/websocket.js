@@ -42,22 +42,17 @@
     var socketEventHandler = {};
 
     /**
-     * @type WebSocket
-     */
-    var socket;
-
-    /**
+     * Creates a new Ratchet instance
      *
      * @param {string} uri
      * @constructor
      */
     var Ratchet = function(uri) {
-        var self = this;
-        socket = new WebSocket(uri);
-        socket.onmessage = function(e) { onMessage.call(self, e); };
-        socket.onclose = function(e) { invokeEventHandlers.call(self, 'socket.close', e); };
-        socket.onerror = function(e) { invokeEventHandlers.call(self, 'socket.error', e); };
-        socket.onopen = function(e) { invokeEventHandlers.call(self, 'socket.open', e); };
+        this.socket = new WebSocket(uri);
+        this.socket.onclose = bind(invokeEventHandlers, this, 'socket.close');
+        this.socket.onerror = bind(invokeEventHandlers, this, 'socket.error');
+        this.socket.onopen = bind(invokeEventHandlers, this, 'socket.open');
+        this.socket.onmessage = bind(onMessage, this);
     };
 
     /**
@@ -68,11 +63,11 @@
      *
      * @returns {boolean}
      */
-    Ratchet.prototype.emit = function(event, data) {
+    function emit(event, data) {
         try {
             var encoded = JSON.stringify({ event: event, data: data });
 
-            socket.send(encoded);
+            this.socket.send(encoded);
 
             return true;
         } catch (e) {
@@ -82,7 +77,7 @@
         }
 
         return false;
-    };
+    }
 
     /**
      * Handles a websocket message event.
@@ -149,28 +144,47 @@
         }
     }
 
-    // socket.open hook
-    registerEventHandler('socket.open', function() {
-        this.emit('socket.auth.request', window['p2_ratchet_access_token']);
-    });
+    /**
+     * Binds the given function to the context.
+     *
+     * @param {function} fn
+     * @param {object} context
+     *
+     * @returns {Function}
+     */
+    function bind(fn, context) {
+        var args = Array.prototype.slice.call(arguments, 2);
+        return function() {
+            return fn.apply(context, Array.prototype.concat.call(args, arguments));
+        }
+    }
 
-    // socket.auth.success hook
-    registerEventHandler('socket.auth.success', function(client) {
+    /**
+     * socket open default callback
+     */
+    function onSocketOpen() {
+        this.emit('socket.auth.request', window['p2_ratchet_access_token']);
+    }
+
+    /**
+     * socket auth success callback
+     */
+    function onSocketAuthSuccess(client) {
         this.authenticated = true;
         this.client = client;
-    });
+    }
 
-    // expose functionality
-    Ratchet.registerEventHandler = Ratchet.prototype.on = registerEventHandler;
-
-    // public members
-    Ratchet.prototype.authenticated = false;
-    Ratchet.prototype.client = null;
-
-    // debug
-    Ratchet.debug = false;
+    registerEventHandler('socket.open', onSocketOpen);
+    registerEventHandler('socket.auth.success', onSocketAuthSuccess);
 
     // expose
+    Ratchet.registerEventHandler = Ratchet.prototype.on = registerEventHandler;
+    Ratchet.debug = false;
+
+    Ratchet.prototype.authenticated = false;
+    Ratchet.prototype.client = null;
+    Ratchet.prototype.emit = emit;
+
     window.Ratchet = Ratchet;
 
 }).call(window);
