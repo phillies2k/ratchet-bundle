@@ -1,7 +1,7 @@
 P2RatchetBundle
 ===============
 
-Version: **1.0.5**
+Version: **1.0.6**
 
 
 ### Installation
@@ -21,10 +21,10 @@ Version: **1.0.5**
 
 ### Usage
 
-* Implement the [ClientInterface](Socket/ClientInterface.php) in your applications user model or document.
-* Implement the [ClientProviderInterface](Socket/ClientProviderInterface.php) in your applications user provider or managing repository.
+* Implement the [ClientInterface](WebSocket/ClientInterface.php) in your applications user model or document.
+* Implement the [ClientProviderInterface](WebSocket/ClientProviderInterface.php) in your applications user provider or managing repository.
 * Set the `provider` setting to the service id of your applications client provider implementation or leave blank for the default anonymous provider.
-* Implement the [ApplicationInterface](Socket/ApplicationInterface) to listen on your own socket events ([Getting started](#getting-started)).
+* Implement the [ApplicationInterface](WebSocket/ApplicationInterface) to listen on your own socket events ([Getting started](#getting-started)).
 * Use the `{{ p2_ratchet_client(debug, user) }}` twig function within your templates to enable the frontend websocket client.
 * Write your client side event handler scripts. See the [Javascript API](#javascript-api) section for more detail.
 * Open a terminal and start the server `app/console socket:server:start`. By default it will accept connection from *:8080 (see [Command Line Tool](#command-line-tool))
@@ -32,12 +32,12 @@ Version: **1.0.5**
 
 ### Getting started
 
-The [ApplicationInterface](Socket/ApplicationInterface) acts only as an alias for symfony`s EventSubscriberInterface. Its used to detect websocket event subscribers explicitly.
+The [ApplicationInterface](WebSocket/ApplicationInterface) acts only as an alias for symfony`s EventSubscriberInterface. Its used to detect websocket event subscribers explicitly.
 
-Write your application as you would write a common event subscriber. The event handler methods will receive exactly one argument: a [MessageEvent](Socket/Event/MessageEvent) instance, containing information about the socket connection and the payload (see [ConnectionInterface](Socket/Connection/ConnectionInterface) and [EventPayload](Socket/Payload/EventPayload) for more details).
+Write your application as you would write a common event subscriber. The event handler methods will receive exactly one argument: a [ConnectionEvent](WebSocket/ConnectionEvent) instance, containing information about the socket connection and the payload (see [ConnectionInterface](WebSocket/Connection/ConnectionInterface) and [Payload](WebSocket/Payload) for more details).
 
 ```php
-# src/Acme/Bundle/ChatBundle/WebSocket/Application.php
+# src/Acme/Bundle/ChatBundle/WebWebSocket/Application.php
 <?php
 
 namespace Acme\Bundle\ChatBundle\WebSocket;
@@ -61,8 +61,7 @@ class Application implements ApplicationInterface
 
 #### Service DI Configuration
 
-Create a service definition for your websocket application. Tag your service definition with `p2_ratchet.application` to
-register the application at the socket server.
+Create a service definition for your websocket application. Tag your service definition with `kernel.event_subscriber` and `p2_ratchet.application` to register the application to the server.
 
 The service definition may look like this:
 ```yaml
@@ -109,10 +108,68 @@ php app/console socket:server:start [port] [address]
 | `socket.auth.failure` | `{ errors }`       | Fired when an error occurred during the authentication process. The payload contains the errors returned. |
 
 
+### Hook-in Points
+
+The bundle allows you to hook into the react event loop to add your own periodic timers. All you have to do is to create a class implementing (WebSocket/Server/Loop/PeriodicTimerInterface) and to tag it as "p2_ratchet.periodic_timer".
+Then the timers will be added to the loop on server startup.
+
+##### Example:
+```php
+# src/Acme/Bundle/ChatBundle/WebSocket/Loop/CustomTimer.php
+<?php
+
+namespace Acme\Bundle\ChatBundle\WebSocket\Loop;
+
+use P2\Bundle\RatchetBundle\WebSocket\Server\Loop\PeriodicTimerInterface;
+
+class CustomTimer implements PeriodicTimerInterface
+{
+    /**
+     * Returns the interval for this timer
+     *
+     * @return int
+     */
+    public function getInterval()
+    {
+        return 60; // execute this timer once per minute
+    }
+
+    /**
+     * Returns the callback.
+     *
+     * @return callable
+     */
+    public function getCallback()
+    {
+        return function() {
+            // do something
+        };
+    }
+
+    /**
+     * Returns a unique name for this timer.
+     *
+     * @return string
+     */
+    public function getName()
+    {
+        return 'custom_timer';
+    }
+}
+```
+
+##### Service
+```
+    # my custom timer
+    acme_chat.websocket.loop.custom_timer:
+        class: %acme_chat.websocket.loop.custom_timer%
+        tags:
+            - { name: p2_ratchet.periodic_timer }
+
+
 ### Javascript API
 
-The api represents just a simple wrapper for the native javascript WebSocket to ease developers life. It basically
-implements the basic communication logic with the socket server.
+The api represents just a simple wrapper for the native javascript WebSocket to ease developers life. It basically implements the basic communication logic with the socket server.
 
 ```javascript
 
@@ -189,6 +246,8 @@ The respective twig template may look like this:
 # src/Acme/Bundle/ChatBundle/Resources/views/chat.html.twig
 {% extends '::base.html.twig' %}
 
+{% use '@P2RatchetBundle/Resources/views/client.html.twig as p2_ratchet %}
+
 {% block stylesheets %}
 
     <style type="text/css">
@@ -223,7 +282,7 @@ The respective twig template may look like this:
 
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 
-    {{ p2_ratchet_client(app.debug, app.user) }}
+    {{ p2_ratchet.websocket_client(app.user.accessToken|default(''), app.debug) }}
 
     <script type="text/javascript">
         $(function() {

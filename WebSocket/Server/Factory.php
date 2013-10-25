@@ -9,6 +9,8 @@
  */
 namespace P2\Bundle\RatchetBundle\WebSocket\Server;
 
+use P2\Bundle\RatchetBundle\WebSocket\Exception\TimerAlreadyAddedException;
+use P2\Bundle\RatchetBundle\WebSocket\Server\Loop\PeriodicTimerInterface;
 use Ratchet\Server\IoServer;
 use Ratchet\WebSocket\WsServer;
 
@@ -44,6 +46,11 @@ class Factory
     protected $bridge;
 
     /**
+     * @var PeriodicTimerInterface[]
+     */
+    protected $periodicTimers;
+
+    /**
      * @param Bridge $bridge
      * @param int $port
      * @param string $address
@@ -53,6 +60,28 @@ class Factory
         $this->bridge = $bridge;
         $this->port = $port;
         $this->address = $address;
+
+        $this->periodicTimers = array();
+    }
+
+    /**
+     * Adds a periodic timer to the loop. Throws TimerAlreadyAddedException when the timer was already added to the
+     * event loop.
+     *
+     * @param PeriodicTimerInterface $periodicTimer
+     *
+     * @return Factory
+     * @throws \P2\Bundle\RatchetBundle\WebSocket\Exception\TimerAlreadyAddedException
+     */
+    public function addPeriodicTimer(PeriodicTimerInterface $periodicTimer)
+    {
+        if (array_key_exists($periodicTimer->getName(), $this->periodicTimers)) {
+            throw new TimerAlreadyAddedException();
+        }
+
+        $this->periodicTimers[$periodicTimer->getName()] = $periodicTimer;
+
+        return $this;
     }
 
     public function create()
@@ -63,7 +92,21 @@ class Factory
             $this->getAddress()
         );
 
+        $this->configure($server);
+
         return $server;
+    }
+
+    /**
+     * Configures the io server
+     *
+     * @param IoServer $server
+     */
+    protected function configure(IoServer $server)
+    {
+        foreach ($this->periodicTimers as $periodicTimer) {
+            $server->loop->addPeriodicTimer($periodicTimer->getInterval(), $periodicTimer->getCallback());
+        }
     }
 
     /**
