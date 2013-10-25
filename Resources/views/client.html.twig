@@ -1,0 +1,10 @@
+{% macro websocket_client(token, debug) %}
+    {% spaceless %}
+        {% if debug is not defined %}{% set debug = false %}{% endif %}
+        <script type="text/javascript" src="{{ asset('@p2_ratchet_js') }}"></script>
+        <script type="text/javascript">
+            var p2_ratchet_access_token = '{{ token }}';
+            Ratchet.debug = {{ debug ? 'true' : 'false' }};
+        </script>
+    {% endspaceless %}
+{% endmacro %}
