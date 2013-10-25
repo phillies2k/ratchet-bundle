@@ -3,7 +3,6 @@ parameters:
     p2_ratchet.assetic.assets_js: [ js/websocket.js ]
     p2_ratchet.command.socket_server_command.class: P2\Bundle\RatchetBundle\Command\SocketServerCommand
     p2_ratchet.security.authentication_handler.class: P2\Bundle\RatchetBundle\Security\AuthenticationSuccessHandler
-    p2_ratchet.twig.ratchet_extension.class: P2\Bundle\RatchetBundle\Twig\RatchetExtension
     p2_ratchet.websocket.anonymous_client_provider.class: P2\Bundle\RatchetBundle\WebSocket\Client\AnonymousClientProvider
     p2_ratchet.websocket.connection_manager.class: P2\Bundle\RatchetBundle\WebSocket\Connection\ConnectionManager
     p2_ratchet.websocket.server_bridge.class: P2\Bundle\RatchetBundle\WebSocket\Server\Bridge
@@ -74,9 +73,3 @@ services:
         arguments: [ @p2_ratchet.websocket.client_provider ]
         tags:
             - { name: kernel.event_listener, event: security.authentication.success, method: onAuthenticationSuccess }
-
-    # twig extension
-    p2_ratchet.twig.ratchet_extension:
-        class: %p2_ratchet.twig.ratchet_extension.class%
-        tags:
-            - { name: twig.extension }

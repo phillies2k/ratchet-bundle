@@ -247,7 +247,7 @@ The respective twig template may look like this:
 # src/Acme/Bundle/ChatBundle/Resources/views/chat.html.twig
 {% extends '::base.html.twig' %}
 
-{% use '@P2RatchetBundle/Resources/views/client.html.twig as p2_ratchet %}
+{% import 'P2RatchetBundle::client.html.twig' as p2_ratchet %}
 
 {% block stylesheets %}
 
