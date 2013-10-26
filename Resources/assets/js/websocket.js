@@ -155,7 +155,7 @@
     function bind(fn, context) {
         var args = Array.prototype.slice.call(arguments, 2);
         return function() {
-            return fn.apply(context, Array.prototype.concat.call(args, arguments));
+            return fn.apply(context, Array.prototype.concat.apply(args, arguments));
         }
     }
 
