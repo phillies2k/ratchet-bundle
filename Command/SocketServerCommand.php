@@ -37,11 +37,16 @@ class SocketServerCommand extends ContainerAwareCommand
     protected function configure()
     {
         $this
+            ->setName('socket:server:start')
+            ->setDescription('Starts a web socket server')
             ->addArgument(static::ARG_PORT, InputArgument::OPTIONAL, 'The port to listen on incoming connections')
             ->addArgument(static::ARG_ADDRESS, InputArgument::OPTIONAL, 'The address to listen on')
-            ->setDescription('Starts a web socket server')
-            ->setHelp('socket:server:start [port] [address]')
-            ->setName('socket:server:start');
+            ->setHelp(<<<EOT
+<info>app/console socket:server:start</info>
+
+  The basic command starts a new websocket server listening on any connections on port 8080
+EOT
+            );
     }
 
     /**
