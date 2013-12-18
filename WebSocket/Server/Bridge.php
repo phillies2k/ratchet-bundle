@@ -20,6 +20,7 @@ use Psr\Log\LoggerInterface;
 use Ratchet\ConnectionInterface as SocketConnection;
 use Ratchet\MessageComponentInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
+use P2\Bundle\RatchetBundle\WebSocket\Connection\Connection;
 
 /**
  * Class Bridge
@@ -89,14 +90,23 @@ class Bridge implements MessageComponentInterface
     public function onClose(SocketConnection $conn)
     {
         $connection = $this->connectionManager->closeConnection($conn);
-
-        $this->logger->notice(
-            sprintf(
-                'Closed connection <info>#%s</info> (<comment>%s</comment>)',
-                $connection->getId(),
-                $connection->getRemoteAddress()
-            )
-        );
+        
+        if($connection instanceof Connection){
+            $this->logger->notice(
+                sprintf(
+                    'Closed connection <info>#%s</info> (<comment>%s</comment>)',
+                    $connection->getId(),
+                    $connection->getRemoteAddress()
+                )
+            );
+        }
+        else{
+            $this->logger->notice(
+                sprintf(
+                    'Closed a connection'
+                )
+            );
+        }
     }
 
     /**
