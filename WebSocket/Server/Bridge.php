@@ -19,7 +19,7 @@ use P2\Bundle\RatchetBundle\WebSocket\Payload;
 use Psr\Log\LoggerInterface;
 use Ratchet\ConnectionInterface as SocketConnection;
 use Ratchet\MessageComponentInterface;
-use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\HttpKernel\Debug\TraceableEventDispatcher;
 
 /**
  * Class Bridge
@@ -33,7 +33,7 @@ class Bridge implements MessageComponentInterface
     protected $connectionManager;
 
     /**
-     * @var EventDispatcher
+     * @var TraceableEventDispatcher
      */
     protected $eventDispatcher;
 
@@ -49,12 +49,12 @@ class Bridge implements MessageComponentInterface
 
     /**
      * @param ConnectionManagerInterface $connectionManager
-     * @param EventDispatcher $eventDispatcher
+     * @param TraceableEventDispatcher $eventDispatcher
      * @param LoggerInterface $logger
      */
     public function __construct(
         ConnectionManagerInterface $connectionManager,
-        EventDispatcher $eventDispatcher,
+        TraceableEventDispatcher $eventDispatcher,
         LoggerInterface $logger
     ) {
         $this->connectionManager = $connectionManager;
