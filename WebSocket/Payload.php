@@ -93,8 +93,10 @@ class Payload
      *
      * @return Payload
      */
-    public static function createFromArray(array $data)
+    public static function createFromArray($data)
     {
+        if ( ! is_array($data)) return null;
+        
         if (static::isValid($data)) {
 
             return new static($data['event'], $data['data']);
