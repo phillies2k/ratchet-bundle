@@ -54,7 +54,7 @@ class Bridge implements MessageComponentInterface
      */
     public function __construct(
         ConnectionManagerInterface $connectionManager,
-        EventDispatcher $eventDispatcher,
+        $eventDispatcher,
         LoggerInterface $logger
     ) {
         $this->connectionManager = $connectionManager;
