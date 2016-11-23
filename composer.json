@@ -20,7 +20,7 @@
         "cboden/ratchet": "0.3.5"
     },
     "autoload": {
-        "psr-4": { "P2\\Bundle\\RatchetBundle\\" : "" }
+        "psr-0": { "P2\\Bundle\\RatchetBundle\\" : "" }
     },
     "target-dir": "P2/Bundle/RatchetBundle",
     "minimum-stability": "stable"
