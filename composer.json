@@ -11,16 +11,16 @@
         }
     ],
     "require": {
-        "symfony/framework-bundle": "~2.3",
-        "symfony/security-bundle": "~2.3",
-        "symfony/twig-bundle": "~2.3",
-        "symfony/console": "~2.3",
-        "symfony/finder": "~2.3",
-        "symfony/yaml": "~2.3",
-        "cboden/ratchet": "0.2.8"
+        "symfony/framework-bundle": "^2.3|^3.0",
+        "symfony/security-bundle": "^2.3|^3.0",
+        "symfony/twig-bundle": "^2.3|^3.0",
+        "symfony/console": "^2.3|^3.0",
+        "symfony/finder": "^2.3|^3.0",
+        "symfony/yaml": "^2.3|^3.0",
+        "cboden/ratchet": "0.3.5"
     },
     "autoload": {
-        "psr-0": { "P2\\Bundle\\RatchetBundle\\" : "" }
+        "psr-4": { "P2\\Bundle\\RatchetBundle\\" : "" }
     },
     "target-dir": "P2/Bundle/RatchetBundle",
     "minimum-stability": "stable"
