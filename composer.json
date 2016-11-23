@@ -11,12 +11,12 @@
         }
     ],
     "require": {
-        "symfony/framework-bundle": "^2.3|^3.0",
-        "symfony/security-bundle": "^2.3|^3.0",
-        "symfony/twig-bundle": "^2.3|^3.0",
-        "symfony/console": "^2.3|^3.0",
-        "symfony/finder": "^2.3|^3.0",
-        "symfony/yaml": "^2.3|^3.0",
+        "symfony/framework-bundle": "~3.0",
+        "symfony/security-bundle": "~3.0",
+        "symfony/twig-bundle": "~3.0",
+        "symfony/console": "~3.0",
+        "symfony/finder": "~3.0",
+        "symfony/yaml": "~3.0",
         "cboden/ratchet": "0.3.5"
     },
     "autoload": {
