@@ -16,60 +16,60 @@ services:
 
     # event dispatcher alias
     p2_ratchet.websocket.event_dispatcher:
-        alias: event_dispatcher
+        alias: "event_dispatcher"
 
     # log stream handler
     p2_ratchet.websocket.logger.stream_handler:
-        class: %p2_ratchet.websocket.logger.stream_handler.class%
+        class: "%p2_ratchet.websocket.logger.stream_handler.class%"
         arguments: [ 'php://stdout' ]
 
     # log file handler
     p2_ratchet.websocket.logger.file_handler:
-        class: %p2_ratchet.websocket.logger.stream_handler.class%
-        arguments: [ %p2_ratchet.websocket.logger.file% ]
+        class: "%p2_ratchet.websocket.logger.stream_handler.class%"
+        arguments: [ "%p2_ratchet.websocket.logger.file%" ]
 
     # server log
     p2_ratchet.websocket.logger:
-        class: %p2_ratchet.websocket.logger.class%
+        class: "%p2_ratchet.websocket.logger.class%"
         arguments:
-            - %p2_ratchet.websocket.logger.name%
-            - [ @p2_ratchet.websocket.logger.stream_handler, @p2_ratchet.websocket.logger.file_handler ]
+            - "%p2_ratchet.websocket.logger.name%"
+            - [ "@p2_ratchet.websocket.logger.stream_handler", "@p2_ratchet.websocket.logger.file_handler" ]
 
     # anonymous client provider
     p2_ratchet.websocket.anonymous_client_provider:
-        class: %p2_ratchet.websocket.anonymous_client_provider.class%
+        class: "%p2_ratchet.websocket.anonymous_client_provider.class%"
 
     # client provider default alias
     p2_ratchet.websocket.client_provider:
-        alias: p2_ratchet.websocket.anonymous_client_provider
+        alias: "p2_ratchet.websocket.anonymous_client_provider"
 
     # connection manager
     p2_ratchet.websocket.connection_manager:
-        class: %p2_ratchet.websocket.connection_manager.class%
-        arguments: [ @p2_ratchet.websocket.client_provider ]
+        class: "%p2_ratchet.websocket.connection_manager.class%"
+        arguments: [ "@p2_ratchet.websocket.client_provider" ]
 
     # server bridge
     p2_ratchet.websocket.server_bridge:
-        class: %p2_ratchet.websocket.server_bridge.class%
+        class: "%p2_ratchet.websocket.server_bridge.class%"
         arguments:
-            - @p2_ratchet.websocket.connection_manager
-            - @p2_ratchet.websocket.event_dispatcher
-            - @p2_ratchet.websocket.logger
+            - "@p2_ratchet.websocket.connection_manager"
+            - "@p2_ratchet.websocket.event_dispatcher"
+            - "@p2_ratchet.websocket.logger"
 
     # server factory
     p2_ratchet.websocket.server_factory:
-        class: %p2_ratchet.websocket.server_factory.class%
-        arguments: [ @p2_ratchet.websocket.server_bridge ]
+        class: "%p2_ratchet.websocket.server_factory.class%"
+        arguments: [ "@p2_ratchet.websocket.server_bridge" ]
 
     # console command
     p2_ratchet.command.socket_server_command:
-        class: %p2_ratchet.command.socket_server_command.class%
+        class: "%p2_ratchet.command.socket_server_command.class%"
         calls:
-            - [ setFactory, [ @p2_ratchet.websocket.server_factory ]]
+            - [ setFactory, [ "@p2_ratchet.websocket.server_factory" ]]
 
     # authentication listener
     p2_ratchet.security.authentication_handler:
-        class: %p2_ratchet.security.authentication_handler.class%
-        arguments: [ @p2_ratchet.websocket.client_provider ]
+        class: "%p2_ratchet.security.authentication_handler.class%"
+        arguments: [ "@p2_ratchet.websocket.client_provider" ]
         tags:
             - { name: kernel.event_listener, event: security.authentication.success, method: onAuthenticationSuccess }
