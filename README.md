@@ -6,15 +6,35 @@ Version: **1.0.6**
 
 ### Installation
 
+Add the bundle in yout composer .json file :
+
+```json 
     "require": {
         "p2/ratchet-bundle": "dev-master"
     }
+```
 
+Enable the bundle in your project :
+
+```php
+<?php 
+//app/AppKernel.php
+class AppKernel extends Kernel
+{
+    public function registerBundles()
+    {
+        $bundles = array(
+        //...
+        new P2\Bundle\RatchetBundle\P2RatchetBundle(),
+        //...
+        );
+//..
+```
 
 ### Configuration
 
     p2_ratchet:
-        provider: ~             # The client provider to use, null for default
+        provider: ~             # The service client provider to use
         address: 0.0.0.0        # The address to receive sockets on (0.0.0.0 means receive from any)
         port: 8080              # The port the socket server will listen on
 
